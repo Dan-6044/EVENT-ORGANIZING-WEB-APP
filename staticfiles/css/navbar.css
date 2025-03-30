@@ -1,0 +1,51 @@
+/* Unique Navbar Styling */
+.navbar-unique {
+    background-color:   rgb(6, 6, 54) !important; 
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    padding: 10px 0;
+    box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.1); /* Transparent shadow */
+    transition: background-color 0.3s ease-in-out;
+    scroll-behavior: smooth;
+}
+
+/* Change background color on scroll */
+.navbar-unique.scrolled {
+    background-color:  rgb(6, 6, 54) !important; 
+}
+
+/* Make container full width */
+.navbar-unique .container {
+    max-width: 100%;
+    padding-left: 0;
+}
+
+/* Logo Styling */
+.navbar-unique .navbar-brand {
+    padding-left: 15px;
+}
+
+/* Navbar Links */
+.navbar-unique .nav-link {
+    color: white !important;
+    font-size: 16px;
+    transition: color 0.3s ease-in-out;
+}
+
+.navbar-unique .nav-link:hover {
+    color: #ffcc00 !important; /* Highlight effect */
+}
+
+/* Sign-up Button */
+.navbar-unique .btn-primary {
+    background-color: transparent !important;
+    color: white !important;
+    border: 2px solid white;
+    font-weight: bold;
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+}
+
+.navbar-unique .btn-primary:hover {
+    background-color: rgba(255, 193, 7, 0.3) !important;
+    border-color: #ffc107 !important;
+}

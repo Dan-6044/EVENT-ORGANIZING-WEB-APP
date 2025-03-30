@@ -1,0 +1,351 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dash.css' %}">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+
+<!-- 🔹 Top Navbar -->
+<nav class="navbar px-3  fixed-top  shadow">
+    <h2 class="text-white">EOS</h2>
+    <span class="navbar-brand">EOS ORGANIZERS PANEL</span>
+    <div class="d-flex align-items-center">
+        <div class="dropdown">
+            <button class="btn p-0 border-0 rounded-circle" type="button" data-bs-toggle="dropdown">
+                <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}" 
+                    alt="Profile" 
+                     class="rounded-circle border border-secondary" 
+                     width="35" height="35">
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg p-3" style="width: 340px; left: auto; right: 0;">
+                <li><a class="dropdown-item text-start" href="#">My Profile</a></li>
+                <li><a class="dropdown-item text-start" href="#">My Account</a></li>
+                <hr class="mx-auto" style="width: 90%;">
+                <a href="{% url 'logout' %}" class="btn btn-primary text-danger" style="width: 90%;">Logout</a>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="d-flex">
+    <nav class="sidebar  text-dark  p-3">
+        <h4 class="text-center head ">EOS PANEL</h4>
+        
+        <!-- Dashboard Section -->
+        <h6 class="text-uppercase mt-3 text-white">Dashboard</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item my-1 {% if request.path == '/dashboard/' %}active{% endif %}">
+                <a class="nav-link d-flex align-items-center" href="{% url 'dashboard' %}">
+                    <i class="fas fa-home me-2"></i> Home
+                </a>
+            </li>
+            
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#eventsMenu">
+                    <span><i class="fas fa-microphone-alt"></i> Events</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_event/' or request.path == '/view_events/' %}show{% endif %}" id="eventsMenu">
+                    <a href="{% url 'view_events' %}" class="nav-link ms-3 text-white {% if request.path == '/view_events/' %}active{% endif %}">View Events</a>
+                    <a href="{% url 'add_event' %}" class="nav-link ms-3 text-white {% if request.path == '/add_event/' %}active{% endif %}">Add Event</a>
+                </div>
+            </li>         
+             
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#vendorsMenu">
+                    <span><i class="fas fa-truck"></i> Vendors</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_vendor/' or request.path == '/view_vendors/' %}show{% endif %}" id="vendorsMenu">
+                    <a href="{% url 'view_vendors' %}" class="nav-link ms-3 text-white {% if request.path == '/view_vendors/' %}active{% endif %}">View Vendors</a>
+                    <a href="{% url 'add_vendor' %}" class="nav-link ms-3 text-white {% if request.path == '/add_vendor/' %}active{% endif %}">Add Vendor</a>
+                </div>
+            </li>
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#ticketsMenu">
+                    <span><i class="fas fa-ticket-alt"></i> Tickets</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_ticket/' or request.path == '/view_tickets/' %}show{% endif %}" id="ticketsMenu">
+                    <a href="{% url 'view_tickets' %}" class="nav-link ms-3 text-white {% if request.path == '/view_tickets/' %}active{% endif %}">View Tickets</a>
+                    <a href="{% url 'add_ticket' %}" class="nav-link ms-3 text-white {% if request.path == '/add_ticket/' %}active{% endif %}">Add Ticket</a>
+                </div>
+            </li>  
+
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#schedulesMenu">
+                    <span><i class="fas fa-calendar-check"></i> Schedule</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_schedule/' or request.path == '/view_schedules/' %}show{% endif %}" id="schedulesMenu">
+                    <a href="{% url 'view_schedules' %}" class="nav-link ms-3 text-white {% if request.path == '/view_schedules/' %}active{% endif %}">View Schedules</a>
+                    <a href="{% url 'add_schedule' %}" class="nav-link ms-3 text-white {% if request.path == '/add_schedule/' %}active{% endif %}">Add Schedule</a>
+                </div>
+            </li>           
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#sponsorsMenu">
+                    <span><i class="fas fa-chart-bar"></i> Sponsor</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_sponsor/' or request.path == '/view_sponsors/' %}show{% endif %}" id="sponsorsMenu">
+                    <a href="{% url 'view_sponsors' %}" class="nav-link ms-3 text-white {% if request.path == '/view_sponsors/' %}active{% endif %}">View Sponsors</a>
+                    <a href="{% url 'add_sponsor' %}" class="nav-link ms-3 text-white {% if request.path == '/add_sponsor/' %}active{% endif %}">Add Sponsor</a>
+                </div>
+            </li>     
+
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#attendeesMenu">
+                    <span><i class="fas fa-theater-masks"></i> Event Attendee</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_attendee/' or request.path == '/view_attendees/' %}show{% endif %}" id="attendeesMenu">
+                    <a href="{% url 'view_attendees' %}" class="nav-link ms-3 text-white {% if request.path == '/view_attendees/' %}active{% endif %}">View Attendees</a>
+                    <a href="{% url 'add_attendee' %}" class="nav-link ms-3 text-white {% if request.path == '/add_attendee/' %}active{% endif %}">Add Attendee</a>
+                </div>
+            </li> 
+
+             <li class="nav-item my-1 {% if request.path == '/reports/' %}active{% endif %}">
+                <a class="nav-link d-flex align-items-center" href="{% url 'reports' %}">
+                    <i class="fas fa-bell me-2"></i> Reports
+                </a>
+            </li>                 
+        
+        </ul>
+
+        <!-- Account Options Section -->
+        <h6 class="text-uppercase mt-4 text-white">Account Options</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item my-1">
+                <a class="nav-link text-white" href="#profile"> <i class="fas fa-user"></i> Profile Settings</a>
+            </li>
+            <li class="nav-item my-1">
+                <a class="nav-link text-danger" href="{% url 'logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <div class="content flex-grow-1 p-4">
+           
+        <!-- Compact Data Table -->
+        <div class="card mb-3">
+            <div class="card-header bg-light py-2">
+                <i class="fas fa-table me-1"></i> Event Data Table
+            </div>
+            <div class="card-body p-2">
+                <div class="table-responsive">
+                    <table id="datatablesSimple" class="table table-striped table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center">Event Name</th>
+                                <th class="text-center">Event Type</th>
+                                <th class="text-center">Event Date</th>
+                                <th class="text-center">Venue</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event in events %}
+                            <tr>
+                                <td>{{ event.event_name }}</td>
+                                <td>{{ event.get_event_type_display }}</td> <!-- Get readable event type -->
+                                <td>{{ event.event_date|date:"Y-m-d H:i" }}</td>
+                                <td>{{ event.venue }}</td>
+                                <td>
+                                    <!-- Edit Button to Trigger Modal -->
+                                   <button type="button" class="btn btn-warning editEventBtn"
+                                        data-id="{{ event.id }}"
+                                        data-name="{{ event.event_name }}"
+                                        data-type="{{ event.event_type }}"
+                                        data-description="{{ event.event_description }}"
+                                        data-theme="{{ event.event_theme }}"
+                                        data-date="{{ event.event_date|date:'Y-m-d\TH:i' }}" 
+                                        data-location="{{ event.venue }}"
+                                        data-setup="{{ event.setup_time|date:'Y-m-d\TH:i' }}"
+                                        data-breakdown="{{ event.breakdown_time|date:'Y-m-d\TH:i' }}">
+                                        Edit
+                                    </button>
+                                    <a href="{% url 'delete_event' event.id %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this event?')">Delete</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">You have no events yet. <a href="{% url 'add_event' %}"  class="btn btn-primary btn-sm">Create an Event</a></td>
+                                </tr>
+                                {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+       
+    </div>    
+</div>
+
+
+
+
+<!-- Edit Event Modal -->
+<div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title mx-auto text-info" id="editEventModalLabel">Edit Event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="editEventForm" action="{% url 'edit_event' %}" method="POST" enctype="multipart/form-data">
+
+                    {% csrf_token %}
+                    <input type="hidden" id="editEventId" name="event_id">
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="editEventName" class="form-label">Event Name</label>
+                            <input type="text" class="form-control" id="editEventName" name="event_name" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="editEventType" class="form-label">Event Type</label>
+                            <select class="form-select" id="editEventType" name="event_type" required>
+                                <option value="theater">Theater</option>
+                                <option value="conference">Conference</option>
+                                <option value="workshop">Workshop</option>
+                                <option value="seminar">Seminar</option>
+                                <option value="concert">Concert</option>
+                                <option value="wedding">Wedding</option>
+                                <option value="corporate">Corporate Event</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="editEventDescription" class="form-label">Event Description</label>
+                            <textarea class="form-control" id="editEventDescription" name="event_description" required></textarea>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="editEventTheme" class="form-label">Event Theme</label>
+                            <input type="text" class="form-control" id="editEventTheme" name="event_theme">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="editEventDate" class="form-label">Event Date & Time</label>
+                            <input type="datetime-local" class="form-control" id="editEventDate" name="event_date" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="editEventLocation" class="form-label">Venue/Location</label>
+                            <input type="text" class="form-control" id="editEventLocation" name="venue" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="editSetupTime" class="form-label">Setup Time</label>
+                            <input type="datetime-local" class="form-control" id="editSetupTime" name="setup_time" required>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="editBreakdownTime" class="form-label">Breakdown Time</label>
+                            <input type="datetime-local" class="form-control" id="editBreakdownTime" name="breakdown_time" required>
+                        </div>
+                    </div>
+
+                    <!-- Poster Upload Section -->
+                    <div class="form-group">
+                        <label for="editEventPoster" class="form-label">Event Poster</label>
+                        <input type="file" class="form-control" id="editEventPoster" name="poster" accept="image/*">
+                    </div>
+                    
+                    <div class="form-footer mt-3">
+                        <button type="submit" class="btn btn-primary btn-lg w-100">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".editEventBtn").forEach(button => {
+            button.addEventListener("click", function () {
+                // Get event details from button data attributes
+                let eventId = this.getAttribute("data-id");
+                let eventName = this.getAttribute("data-name");
+                let eventType = this.getAttribute("data-type");
+                let eventDescription = this.getAttribute("data-description");
+                let eventTheme = this.getAttribute("data-theme");
+                let eventDate = this.getAttribute("data-date");
+                let eventLocation = this.getAttribute("data-location");
+                let setupTime = this.getAttribute("data-setup");
+                let breakdownTime = this.getAttribute("data-breakdown");
+
+                // Populate modal fields
+                document.getElementById("editEventId").value = eventId;
+                document.getElementById("editEventName").value = eventName;
+                document.getElementById("editEventType").value = eventType;
+                document.getElementById("editEventDescription").value = eventDescription;
+                document.getElementById("editEventTheme").value = eventTheme;
+                document.getElementById("editEventDate").value = eventDate;
+                document.getElementById("editEventLocation").value = eventLocation;
+                document.getElementById("editSetupTime").value = setupTime;
+                document.getElementById("editBreakdownTime").value = breakdownTime;
+
+                // Show modal
+                let modal = new bootstrap.Modal(document.getElementById("editEventModal"));
+                modal.show();
+            });
+        });
+    });
+</script>
+
+
+<script>
+    // Script to rotate chevron icons on collapse toggle
+    document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(item => {
+        item.addEventListener('click', function () {
+            let icon = this.querySelector('.rotate-icon');
+            if (icon) {
+                icon.classList.toggle('rotate-down');
+            }
+        });
+    });
+</script>
+
+<!-- Include jQuery, DataTables & Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<!-- Initialize DataTable -->
+<script>
+    $(document).ready(function() {
+        $('#datatablesSimple').DataTable({
+             "stateSave": true,
+            "paging": true,
+            "lengthMenu": [5, 10, 25, 50], // Show entries per page
+            "ordering": true, // Enable sorting on all columns
+            "info": true, // Footer info (e.g., Showing 1 to 10 of 50 entries)
+            "searching": true, // Enable search box
+            "language": {
+                "emptyTable": ""
+                "lengthMenu": " _MENU_ Show entries",
+                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "paginate": {
+                    "previous": "Previous",
+                    "next": "Next"
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock %}

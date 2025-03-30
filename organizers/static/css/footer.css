@@ -1,0 +1,81 @@
+.custom-footer {
+    background: rgb(6, 6, 54) !important;
+    color: white;
+    padding: 40px;
+    text-align: center;
+    height: 60vh;
+    margin-top: -15px; /* Moves footer closer to the section above */
+}
+
+
+/* Footer Logo */
+.footer-logo {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end; /* Aligns content to the bottom */
+    height: 80px; /* Adjust height to control positioning */
+    margin-top: 30px; /* Moves it lower */
+}
+
+
+/* Links Column */
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    height: 80px; /* Adjust height to control positioning */
+    margin-top: 30px; /* Moves it lower */
+}
+
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+
+.footer-links a:hover {
+    color: pink;
+}
+
+/* Contact Button */
+.contact-btn {
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+    border-radius: 25px;
+    display: inline-block; /* Ensures proper spacing */
+    margin-top: 20px; /* Adds space between h3 and button */
+}
+
+.contact-btn:hover {
+    background-color: rgba(255, 193, 7, 0.3) !important;
+    border-color: #ffc107 !important;
+}
+
+/* Horizontal Line */
+.footer-line {
+    border: 0;
+    height: 2px;
+    background: white;
+    margin-top: 120px; /* Moves it lower */
+}
+
+/* Copyright Section */
+.copyright p {
+    margin: 0;
+    font-size: 14px;
+}
+.footer-contact{
+    display: column;
+    justify-content: center;
+    align-items: flex-end; /* Aligns content to the bottom */
+    height: 80px; /* Adjust height to control positioning */
+    margin-top: 50px; /* Moves it lower */
+}

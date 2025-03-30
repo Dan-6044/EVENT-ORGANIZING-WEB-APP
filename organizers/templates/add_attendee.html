@@ -1,0 +1,260 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dash.css' %}">
+
+<!-- 🔹 Top Navbar -->
+<nav class="navbar px-3  fixed-top  shadow">
+    <h2 class="text-white">EOS</h2>
+    <span class="navbar-brand">EOS ORGANIZERS PANEL</span>
+    <div class="d-flex align-items-center">
+        <div class="dropdown">
+            <button class="btn p-0 border-0 rounded-circle" type="button" data-bs-toggle="dropdown">
+                <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}" 
+                    alt="Profile" 
+                     class="rounded-circle border border-secondary" 
+                     width="35" height="35">
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg p-3" style="width: 340px; left: auto; right: 0;">
+                <li><a class="dropdown-item text-start" href="#">My Profile</a></li>
+                <li><a class="dropdown-item text-start" href="#">My Account</a></li>
+                <hr class="mx-auto" style="width: 90%;">
+                <a href="{% url 'logout' %}" class="btn btn-primary text-danger" style="width: 90%;">Logout</a>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="d-flex">
+    <nav class="sidebar  text-dark  p-3">
+        <h4 class="text-center head ">EOS PANEL</h4>
+        
+        <!-- Dashboard Section -->
+        <h6 class="text-uppercase mt-3 text-white">Dashboard</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item my-1 {% if request.path == '/dashboard/' %}active{% endif %}">
+                <a class="nav-link d-flex align-items-center" href="{% url 'dashboard' %}">
+                    <i class="fas fa-home me-2"></i> Home
+                </a>
+            </li>
+            
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#eventsMenu">
+                    <span><i class="fas fa-microphone-alt"></i> Events</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_event/' or request.path == '/view_station/' %}show{% endif %}" id="eventsMenu">
+                    <a href="{% url 'view_events' %}" class="nav-link ms-3 text-white {% if request.path == '/view_events/' %}active{% endif %}">View Events</a>
+                    <a href="{% url 'add_event' %}" class="nav-link ms-3 text-white {% if request.path == '/add_event/' %}active{% endif %}">Add Event</a>
+                </div>
+            </li>         
+             
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#vendorsMenu">
+                    <span><i class="fas fa-truck"></i> Vendors</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_vendor/' or request.path == '/view_vendors/' %}show{% endif %}" id="vendorsMenu">
+                    <a href="{% url 'view_vendors' %}" class="nav-link ms-3 text-white {% if request.path == '/view_vendors/' %}active{% endif %}">View Vendors</a>
+                    <a href="{% url 'add_vendor' %}" class="nav-link ms-3 text-white {% if request.path == '/add_vendor/' %}active{% endif %}">Add Vendor</a>
+                </div>
+            </li>
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#ticketsMenu">
+                    <span><i class="fas fa-ticket-alt"></i> Tickets</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_ticket/' or request.path == '/view_tickets/' %}show{% endif %}" id="ticketsMenu">
+                    <a href="{% url 'view_tickets' %}" class="nav-link ms-3 text-white {% if request.path == '/view_tickets/' %}active{% endif %}">View Tickets</a>
+                    <a href="{% url 'add_ticket' %}" class="nav-link ms-3 text-white {% if request.path == '/add_ticket/' %}active{% endif %}">Add Ticket</a>
+                </div>
+            </li>
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#schedulesMenu">
+                    <span><i class="fas fa-calendar-check"></i> Schedule</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_schedule/' or request.path == '/view_schedules/' %}show{% endif %}" id="schedulesMenu">
+                    <a href="{% url 'view_schedules' %}" class="nav-link ms-3 text-white {% if request.path == '/view_schedules/' %}active{% endif %}">View Schedules</a>
+                    <a href="{% url 'add_schedule' %}" class="nav-link ms-3 text-white {% if request.path == '/add_schedule/' %}active{% endif %}">Add Schedule</a>
+                </div>
+            </li>  
+            
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#sponsorsMenu">
+                    <span><i class="fas fa-chart-bar"></i> Sponsor</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_sponsor/' or request.path == '/view_sponsors/' %}show{% endif %}" id="sponsorsMenu">
+                    <a href="{% url 'view_sponsors' %}" class="nav-link ms-3 text-white {% if request.path == '/view_sponsors/' %}active{% endif %}">View Sponsors</a>
+                    <a href="{% url 'add_sponsor' %}" class="nav-link ms-3 text-white {% if request.path == '/add_sponsor/' %}active{% endif %}">Add Sponsor</a>
+                </div>
+            </li> 
+           
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#attendeesMenu">
+                    <span><i class="fas fa-theater-masks"></i> Event Attendee</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_attendee/' or request.path == '/view_attendees/' %}show{% endif %}" id="attendeesMenu">
+                    <a href="{% url 'view_attendees' %}" class="nav-link ms-3 text-white {% if request.path == '/view_attendees/' %}active{% endif %}">View Attendees</a>
+                    <a href="{% url 'add_attendee' %}" class="nav-link ms-3 text-white {% if request.path == '/add_attendee/' %}active{% endif %}">Add Attendee</a>
+                </div>
+            </li> 
+
+             <li class="nav-item my-1 {% if request.path == '/reports/' %}active{% endif %}">
+                <a class="nav-link d-flex align-items-center" href="{% url 'reports' %}">
+                    <i class="fas fa-bell me-2"></i> Reports
+                </a>
+            </li> 
+        </ul>
+
+        <!-- Account Options Section -->
+        <h6 class="text-uppercase mt-4 text-white">Account Options</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item my-1">
+                <a class="nav-link text-white" href="#profile"> <i class="fas fa-user"></i> Profile Settings</a>
+            </li>
+            <li class="nav-item my-1">
+                <a class="nav-link text-danger" href="{% url 'logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <div class="content flex-grow-1 p-4">        
+        <div class="form-container mx-auto" style="max-width: 800px;">
+            <h2 class="form-heading">Add Schedule</h2>
+           <form action="{% url 'add_attendee' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- Event Selection Dropdown -->
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="event" class="form-label">Event</label>
+                        <select class="form-select" id="event" name="event" required onchange="loadTicketTypes(this)">
+                            <option value="">Select Event</option>
+                            {% for event in events %}
+                                <option value="{{ event.id }}">{{ event.event_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="name" class="form-label">Attendee Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required placeholder="Enter attendee name">
+                    </div>
+                </div>
+
+                 <!-- Ticket Type Selection (Appears after event selection) -->
+                <div class="row" id="ticket-type-row" style="display:none;">
+                    <div class="col-md-6 form-group">
+                        <label for="ticket" class="form-label">Ticket Type</label>
+                        <select class="form-select" id="ticket" name="ticket" required>
+                            <option value="">Select Ticket Type</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label for="ticket_price" class="form-label">Ticket Price</label>
+                        <input type="text" class="form-control" id="ticket_price" name="ticket_price" readonly>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="discount_percentage" class="form-label">Discount Percentage</label>
+                        <input type="number" class="form-control" id="discount_percentage" name="discount_percentage" step="0.01" min="0" placeholder="Enter discount percentage" oninput="applyDiscount()">
+                   </div>
+
+                    <div class="col-md-6 form-group">
+                        <label for="description" class="form-label">Discount Reson</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Describe Discount Reason" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Attendee Details -->
+                <div class="row">
+                     <div class="col-md-6 form-group">
+                        <label for="email" class="form-label">Attendee Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required placeholder="Enter attendee email">
+                    </div>
+
+                    <div class="col-md-6 form-group">
+                        <label for="phone_number" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="phone_number" name="phone_number" required placeholder="Enter attendee phone number">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-footer mt-3">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Add Attendee</button>
+                </div>
+            </form>
+
+        </div>      
+    </div>
+    
+
+<script>
+    // Script to rotate chevron icons on collapse toggle
+    document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(item => {
+        item.addEventListener('click', function () {
+            let icon = this.querySelector('.rotate-icon');
+            if (icon) {
+                icon.classList.toggle('rotate-down');
+            }
+        });
+    });
+</script>
+
+<script>
+    // JavaScript to load ticket types dynamically based on selected event
+    function loadTicketTypes(eventSelect) {
+        var eventId = eventSelect.value;
+        if (eventId) {
+            // Show the ticket type section
+            document.getElementById('ticket-type-row').style.display = 'flex';
+
+            // Send AJAX request to get the tickets for the selected event
+            fetch(`/get_ticket_types/?event_id=${eventId}`)
+                .then(response => response.json())
+                .then(data => {
+                    var ticketSelect = document.getElementById('ticket');
+                    var ticketPriceInput = document.getElementById('ticket_price');
+                    ticketSelect.innerHTML = '<option value="">Select Ticket Type</option>'; // Clear existing options
+
+                    data.tickets.forEach(ticket => {
+                        var option = document.createElement('option');
+                        option.value = ticket.id;
+                        option.textContent = ticket.ticket_type;
+                        ticketSelect.appendChild(option);
+                    });
+
+                    // When a ticket type is selected, show the price
+                    ticketSelect.addEventListener('change', function() {
+                        var selectedTicket = data.tickets.find(ticket => ticket.id == ticketSelect.value);
+                        if (selectedTicket) {
+                            ticketPriceInput.value = selectedTicket.price;
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching ticket types:', error));
+        } else {
+            // Hide the ticket type section if no event is selected
+            document.getElementById('ticket-type-row').style.display = 'none';
+        }
+    }
+</script>
+
+<!-- Bootstrap JS -->
+<!-- Bootstrap 5.1+ and Popper.js (required for Bootstrap's dropdowns, modals, etc.) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+
+
+{% endblock %}

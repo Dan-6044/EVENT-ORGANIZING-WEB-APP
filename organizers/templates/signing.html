@@ -6,7 +6,7 @@
 
 <div class="auth-container">
     <div class="auth-box">
-        <h4>VOTING SYSTEM<br> ADMIN PANEL</h4>
+        <h4>EOS <br> SIGNING PANEL</h4>
 
         <div class="auth-toggle">
             <a href="#" id="toggleSignIn" class="active">Sign In</a>
@@ -15,7 +15,7 @@
         </div>
 
         <!-- Sign In Form -->
-        <form id="signInForm" action="" method="POST">
+        <form id="signInForm" action="{% url 'signin' %}" method="POST">
             {% csrf_token %}
             <div id="loginErrorMessages" class="error-messages">
                 {% if messages %}
@@ -40,7 +40,7 @@
         </form>
 
         <!-- Sign Up Form -->
-        <form id="signUpForm" class="hidden" action="" method="POST">
+        <form id="signUpForm" class="hidden" action="{% url 'signup' %}" method="POST">
             {% csrf_token %}
             <div class="input-group">
                 <label>Username</label>

@@ -1,0 +1,28 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/service.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Moving Text Section -->
+<div class="services-moving-text-container">
+    <h1 class="services-moving-text">Celebrate Your Achievements</h1>
+</div>
+
+<!-- Services Info Section -->
+<div id="services" class="services-info-section">
+        <div class="services-text-content">
+        <h1>Get to know more about us and our services.</h1>
+        <p>Explore who we are and the services we offer.
+             Delve into the details of our company to understand our expertise
+              and our dedication to delivering excellent results.</p>
+        <div class="services-btn-container"> 
+            <button class="services-feature-btn">Services</button>
+            <button class="services-feature-btn">About Us</button>
+        
+        </div>
+    </div>
+    <img src="{% static 'images/feature1.jpg' %}" class="services-feature-img">
+</div>
+{% endblock %}

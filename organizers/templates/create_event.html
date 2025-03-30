@@ -1,0 +1,264 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dash.css' %}">
+
+
+<!-- 🔹 Top Navbar -->
+<nav class="navbar px-3  fixed-top  shadow">
+    <h2 class="text-white">EOS</h2>
+    <span class="navbar-brand">EOS ORGANIZERS PANEL</span>
+    <div class="d-flex align-items-center">
+        <div class="dropdown">
+            <button class="btn p-0 border-0 rounded-circle" type="button" data-bs-toggle="dropdown">
+                <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}" 
+                    alt="Profile" 
+                     class="rounded-circle border border-secondary" 
+                     width="35" height="35">
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg p-3" style="width: 340px; left: auto; right: 0;">
+                <li><a class="dropdown-item text-start" href="#">My Profile</a></li>
+                <li><a class="dropdown-item text-start" href="#">My Account</a></li>
+                <hr class="mx-auto" style="width: 90%;">
+                <a href="{% url 'logout' %}" class="btn btn-primary text-danger" style="width: 90%;">Logout</a>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="d-flex">
+    <nav class="sidebar  text-dark  p-3">
+        <h4 class="text-center head ">EOS PANEL</h4>
+        
+        <!-- Dashboard Section -->
+        <h6 class="text-uppercase mt-3 text-white">Dashboard</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item my-1 {% if request.path == '/dashboard/' %}active{% endif %}">
+                <a class="nav-link d-flex align-items-center" href="{% url 'dashboard' %}">
+                    <i class="fas fa-home me-2"></i> Home
+                </a>
+            </li>
+            
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#eventsMenu">
+                    <span><i class="fas fa-microphone-alt"></i> Events</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_event/' or request.path == '/view_station/' %}show{% endif %}" id="eventsMenu">
+                    <a href="{% url 'view_events' %}" class="nav-link ms-3 text-white {% if request.path == '/view_events/' %}active{% endif %}">View Events</a>
+                    <a href="{% url 'add_event' %}" class="nav-link ms-3 text-white {% if request.path == '/add_event/' %}active{% endif %}">Add Event</a>
+                </div>
+            </li>         
+             
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#vendorsMenu">
+                    <span><i class="fas fa-truck"></i> Vendors</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_vendor/' or request.path == '/view_vendors/' %}show{% endif %}" id="vendorsMenu">
+                    <a href="{% url 'view_vendors' %}" class="nav-link ms-3 text-white {% if request.path == '/view_vendors/' %}active{% endif %}">View Vendors</a>
+                    <a href="{% url 'add_vendor' %}" class="nav-link ms-3 text-white {% if request.path == '/add_vendor/' %}active{% endif %}">Add Vendor</a>
+                </div>
+            </li>
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#ticketsMenu">
+                    <span><i class="fas fa-ticket-alt"></i> Tickets</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_ticket/' or request.path == '/view_tickets/' %}show{% endif %}" id="ticketsMenu">
+                    <a href="{% url 'view_tickets' %}" class="nav-link ms-3 text-white {% if request.path == '/view_tickets/' %}active{% endif %}">View Tickets</a>
+                    <a href="{% url 'add_ticket' %}" class="nav-link ms-3 text-white {% if request.path == '/add_ticket/' %}active{% endif %}">Add Ticket</a>
+                </div>
+            </li>
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#schedulesMenu">
+                    <span><i class="fas fa-calendar-check"></i> Schedule</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_schedule/' or request.path == '/view_schedules/' %}show{% endif %}" id="schedulesMenu">
+                    <a href="{% url 'view_schedules' %}" class="nav-link ms-3 text-white {% if request.path == '/view_schedules/' %}active{% endif %}">View Schedules</a>
+                    <a href="{% url 'add_schedule' %}" class="nav-link ms-3 text-white {% if request.path == '/add_schedule/' %}active{% endif %}">Add Schedule</a>
+                </div>
+            </li>  
+            
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#sponsorsMenu">
+                    <span><i class="fas fa-chart-bar"></i> Sponsor</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_sponsor/' or request.path == '/view_sponsors/' %}show{% endif %}" id="sponsorsMenu">
+                    <a href="{% url 'view_sponsors' %}" class="nav-link ms-3 text-white {% if request.path == '/view_sponsors/' %}active{% endif %}">View Sponsors</a>
+                    <a href="{% url 'add_sponsor' %}" class="nav-link ms-3 text-white {% if request.path == '/add_sponsor/' %}active{% endif %}">Add Sponsor</a>
+                </div>
+            </li> 
+           
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#attendeesMenu">
+                    <span><i class="fas fa-theater-masks"></i> Event Attendee</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_attendee/' or request.path == '/view_attendees/' %}show{% endif %}" id="attendeesMenu">
+                    <a href="{% url 'view_attendees' %}" class="nav-link ms-3 text-white {% if request.path == '/view_attendees/' %}active{% endif %}">View Attendees</a>
+                    <a href="{% url 'add_attendee' %}" class="nav-link ms-3 text-white {% if request.path == '/add_attendee/' %}active{% endif %}">Add Attendee</a>
+                </div>
+            </li> 
+
+             <li class="nav-item my-1 {% if request.path == '/reports/' %}active{% endif %}">
+                <a class="nav-link d-flex align-items-center" href="{% url 'reports' %}">
+                    <i class="fas fa-bell me-2"></i> Reports
+                </a>
+            </li> 
+        </ul>
+
+        <!-- Account Options Section -->
+        <h6 class="text-uppercase mt-4 text-white">Account Options</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item my-1">
+                <a class="nav-link text-white" href="#profile"> <i class="fas fa-user"></i> Profile Settings</a>
+            </li>
+            <li class="nav-item my-1">
+                <a class="nav-link text-danger" href="{% url 'logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <div class="content flex-grow-1 p-4">        
+        <div class="form-container mx-auto" style="max-width: 800px;">
+            <h2 class="form-heading">Add Event</h2>
+            <form action="{% url 'add_event' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {% if messages %}
+                    <div class="alert alert-danger">
+                        {% for message in messages %}
+                            <p>{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="event_name" class="form-label">Event Name</label>
+                        <input type="text" class="form-control" id="event_name" name="event_name" placeholder="Enter Event Name" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="event_type" class="form-label">Event Type</label>
+                        <select class="form-select" id="event_type" name="event_type" required>
+                            <option value="conference">Theater</option>
+                            <option value="conference">Conference</option>
+                            <option value="workshop">Workshop</option>
+                            <option value="seminar">Seminar</option>
+                            <option value="concert">Concert</option>
+                            <option value="wedding">Wedding</option>
+                            <option value="corporate">Corporate Event</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="event_description" class="form-label">Event Description</label>
+                        <textarea class="form-control" id="event_description" name="event_description" placeholder="Enter Event Description" required></textarea>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="event_theme" class="form-label">Event Theme</label>
+                        <input type="text" class="form-control" id="event_theme" name="event_theme" placeholder="Enter Event Theme (if any)">
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="event_date" class="form-label">Event Date & Time</label>
+                        <input type="datetime-local" class="form-control" id="event_date" name="event_date" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="venue" class="form-label">Venue/Location</label>
+                        <input type="text" class="form-control" id="venue" name="venue" placeholder="Enter Venue or Platform Details" required>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="setup_time" class="form-label">Setup Time</label>
+                        <input type="datetime-local" class="form-control" id="setup_time" name="setup_time" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="breakdown_time" class="form-label">Breakdown Time</label>
+                        <input type="datetime-local" class="form-control" id="breakdown_time" name="breakdown_time" required>
+                    </div>
+                </div>
+                <!-- Poster Upload Section -->
+                <div class="form-group">
+                    <label for="poster" class="form-label">Event Poster</label>
+                    <input type="file" class="form-control" id="poster" name="poster" accept="image/*" required>
+                </div>                
+                <div class="form-footer mt-3">
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Add Event</button>
+                </div>
+            </form>
+        </div>      
+    </div>
+    
+
+<script>
+    // Script to rotate chevron icons on collapse toggle
+    document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(item => {
+        item.addEventListener('click', function () {
+            let icon = this.querySelector('.rotate-icon');
+            if (icon) {
+                icon.classList.toggle('rotate-down');
+            }
+        });
+    });
+</script>
+<!-- Display Success/ Error messages -->
+{% if messages %}
+    <script>
+        // Wait for the document to be fully loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            // Check if there are any messages
+            if (document.querySelector('.modal')) {
+                var myModal = new bootstrap.Modal(document.getElementById('messageModal'), {
+                    keyboard: false
+                });
+                myModal.show();  // Show the modal
+            }
+        });
+    </script>
+
+    <!-- Custom Modal/Card -->
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog d-flex justify-content-center">
+            <div class="modal-content card shadow-sm" style="max-width: 400px; width: 100%;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="messageModalLabel">Message</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <ul id="message-list" class="list-unstyled m-0">
+                        {% for message in messages %}
+                            <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-primary btn-sm w-100" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Bootstrap JS -->
+<!-- Bootstrap 5.1+ and Popper.js (required for Bootstrap's dropdowns, modals, etc.) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+
+
+{% endblock %}

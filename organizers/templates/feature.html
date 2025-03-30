@@ -1,0 +1,103 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block title %}Feature Page{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/feature.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<section id="about" class="feature-section">
+    <div class="moving-text-container">
+        <h1 class="moving-text">ONE-STOP EVENT ORGANIZING TOOL</h1>
+    </div>
+    
+    <div class="sub-heading">
+        <h3 class="left-text">We do all kinds of events. Take a Look</h3>
+        <div class="sub-container">
+            <h3 class="right-text mb-10">Want to see more? Take a look</h3>
+            <a href="#" class="btn-feature">Contact Us</a>
+           
+        </div>        
+    </div>
+    
+    <!-- Bootstrap Carousel -->
+<div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <!-- First Slide (Two Images, 60% - 40%) -->
+        <div class="carousel-item active">
+            <div class="d-flex justify-content-center align-items-center gap-3">
+                <img src="{% static 'images/feature1.jpg' %}" class="img-fluid img-60">
+                <img src="{% static 'images/feature2.jpg' %}" class="img-fluid img-40">
+            </div>
+        </div>
+
+        <!-- Other Slides (One Large Center, Two Small Side Images) -->
+        <div class="carousel-item">
+            <div class="d-flex justify-content-center align-items-center gap-3">
+                <img src="{% static 'images/feature2.jpg' %}" class="img-fluid img-20">
+                <img src="{% static 'images/feature3.jpg' %}" class="img-fluid img-60">
+                <img src="{% static 'images/feature4.jpg' %}" class="img-fluid img-20">
+            </div>
+        </div>
+
+        <div class="carousel-item">
+            <div class="d-flex justify-content-center align-items-center gap-3">
+                <img src="{% static 'images/feature3.jpg' %}" class="img-fluid img-20">
+                <img src="{% static 'images/feature4.jpg' %}" class="img-fluid img-60">
+                <img src="{% static 'images/feature5.jpg' %}" class="img-fluid img-20">
+            </div>
+        </div>
+
+        <div class="carousel-item">
+            <div class="d-flex justify-content-center align-items-center gap-3">
+                <img src="{% static 'images/feature4.jpg' %}" class="img-fluid img-20">
+                <img src="{% static 'images/feature5.jpg' %}" class="img-fluid img-60">
+                <img src="{% static 'images/feature6.jpg' %}" class="img-fluid img-20">
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Arrows -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+
+    <!-- Navigation Dots -->
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#imageCarousel" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#imageCarousel" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#imageCarousel" data-bs-slide-to="2"></button>
+        <button type="button" data-bs-target="#imageCarousel" data-bs-slide-to="3"></button>
+    </div>
+</div>
+
+<div class="feature-highlights">
+    <h2>Jack of all trades.</h2>
+    <h4>... a master of none, but better than a master of all</h4>
+</div>
+
+    
+    
+<div class="info-section">
+    <img src="{% static 'images/feature1.jpg' %}" class="feature-img">
+    <div class="text-content">
+        <h1>Ready to buld your Event?</h1>
+        <p>We are the One-Stop Shop for events.
+             Learn more about the types of events we do and how we do them. 
+             For further inquiries, contact us and we will give you a call to discuss 
+             your specific wants and needs for your occasion, be it special or professional…</p>
+        <div class="btn-container"> 
+            <button class="feature-btn">Learn More</button>
+            <h5>Build Your Events</h5>
+        </div>
+    </div>
+</div>
+
+</section>
+
+
+{% endblock %}
