@@ -175,11 +175,6 @@ def delete_event(request, event_id):
 
 
 
-
-
-
-
-
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import Vendor, Venue, Catering, AV, Decor, Entertainment, Security, Printing, Transportation, WasteManagement, Event
@@ -191,18 +186,30 @@ def add_vendor(request):
         vendor_name = request.POST.get('name')
         vendor_type = request.POST.get('vendor_type')
         vendor_description = request.POST.get('event_description')
+        payment_cost = request.POST.get('payment_cost')
+        deposit = request.POST.get('deposit')
+        credit_days = request.POST.get('credit_days')
+        payment_status = request.POST.get('payment_status')
         event_id = request.POST.get('event_name')  # Event selected for this vendor
+      
 
         # Ensure that all required fields are present
         if not vendor_name or not vendor_type or not vendor_description or not event_id:
             return render(request, 'add_vendor.html', {'error': 'All fields are required.'})
+        
+        event = get_object_or_404(Event, id=event_id)  # This ensures event_id exists
 
         # Save the vendor details in the Vendor table
         vendor = Vendor(
             name=vendor_name,
             vendor_type=vendor_type,
             description=vendor_description,
-            user=request.user  # Associate vendor with logged-in user
+            payment_cost=payment_cost,
+            deposit=deposit,
+            credit_days=credit_days,
+            payment_status=payment_status,
+            user=request.user,  # Associate vendor with logged-in user
+             event=event
         )
         vendor.save()
 
@@ -361,10 +368,133 @@ def add_vendor(request):
         return render(request, 'add_vendor.html', {'user_events': user_events})
 
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from .models import Vendor, Event  # Assuming Event is your event model
 
 @login_required
 def view_vendors(request):
-    return render(request, 'add_vendor.html')
+    events = Event.objects.filter(user=request.user)  # Get events for the logged-in user
+    return render(request, "view_vendors.html", {"events": events})
+
+from django.http import JsonResponse
+from .models import Vendor, Venue, Catering, AV, Decor, Entertainment, Security, Printing, Transportation, WasteManagement
+
+def get_vendors(request, event_id):
+    try:
+        vendors = Vendor.objects.filter(event_id=event_id).select_related(
+            "venue", "catering", "av", "decor", "entertainment",
+            "security", "printing", "transportation", "wastemanagement"
+        )
+        vendor_list = []
+
+        for vendor in vendors:
+            vendor_data = {
+                "vendor_id": vendor.id,
+                "name": vendor.name,
+                "vendor_type": vendor.vendor_type,
+                "description": vendor.description,
+                "payment_cost": float(vendor.payment_cost),
+                "deposit": float(vendor.deposit),
+                "credit_days": vendor.credit_days,
+                "payment_status": vendor.payment_status,
+            }
+
+            # Add venue-specific fields
+            if vendor.vendor_type == "venue" and hasattr(vendor, "venue"):
+                vendor_data.update({
+                    "venue_address": vendor.venue.venue_address,
+                    "venue_booking_time": vendor.venue.venue_booking_time,
+                    "venue_requirements": vendor.venue.venue_requirements,
+                    "venue_capacity": vendor.venue.venue_capacity,
+                    "venue_rental_cost": float(vendor.venue.venue_rental_cost),
+                })
+
+            # Add catering-specific fields
+            elif vendor.vendor_type == "catering" and hasattr(vendor, "catering"):
+                vendor_data.update({
+                    "catering_type": vendor.catering.catering_type,
+                    "menu_options": vendor.catering.menu_options,
+                    "dietary_preferences": vendor.catering.dietary_preferences,
+                    "catering_cost": float(vendor.catering.catering_cost),
+                    "service_requirements": vendor.catering.service_requirements,
+                })
+
+            # Add AV-specific fields
+            elif vendor.vendor_type == "av" and hasattr(vendor, "av"):
+                vendor_data.update({
+                    "equipment_provided": vendor.av.equipment_provided,
+                    "av_cost": float(vendor.av.av_cost),
+                    "technical_support": vendor.av.technical_support,
+                    "setup_time": vendor.av.setup_time,
+                    "contact_emergency": vendor.av.contact_emergency,
+                })
+
+            # Add decor-specific fields
+            elif vendor.vendor_type == "decor" and hasattr(vendor, "decor"):
+                vendor_data.update({
+                    "design_theme": vendor.decor.design_theme,
+                    "items_supplied": vendor.decor.items_supplied,
+                    "decor_cost": float(vendor.decor.decor_cost),
+                    "setup_time": vendor.decor.setup_time,
+                    "return_tear_down_time": vendor.decor.return_tear_down_time,
+                })
+
+            # Add entertainment-specific fields
+            elif vendor.vendor_type == "entertainment" and hasattr(vendor, "entertainment"):
+                vendor_data.update({
+                    "type_of_entertainment": vendor.entertainment.type_of_entertainment,
+                    "entertainment_cost": float(vendor.entertainment.entertainment_cost),
+                    "performance_duration": vendor.entertainment.performance_duration,
+                    "special_requirements": vendor.entertainment.special_requirements,
+                })
+
+            # Add security-specific fields
+            elif vendor.vendor_type == "security" and hasattr(vendor, "security"):
+                vendor_data.update({
+                    "security_personnel_count": vendor.security.security_personnel_count,
+                    "security_duties": vendor.security.security_duties,
+                    "security_cost": float(vendor.security.security_cost),
+                    "setup_requirements": vendor.security.setup_requirements,
+                })
+
+            # Add printing-specific fields
+            elif vendor.vendor_type == "printing" and hasattr(vendor, "printing"):
+                vendor_data.update({
+                    "printed_materials": vendor.printing.printed_materials,
+                    "printing_cost": float(vendor.printing.printing_cost),
+                    "design_requirements": vendor.printing.design_requirements,
+                    "delivery_timeframe": vendor.printing.delivery_timeframe,
+                })
+
+            # Add transportation-specific fields
+            elif vendor.vendor_type == "transportation" and hasattr(vendor, "transportation"):
+                vendor_data.update({
+                    "transport_type": vendor.transportation.transport_type,
+                    "transportation_cost": float(vendor.transportation.transportation_cost),
+                    "transport_schedule": vendor.transportation.transport_schedule,
+                    "passenger_capacity": vendor.transportation.passenger_capacity,
+                    "special_requests": vendor.transportation.special_requests,
+                })
+
+            # Add waste management-specific fields
+            elif vendor.vendor_type == "waste_management" and hasattr(vendor, "wastemanagement"):
+                vendor_data.update({
+                    "waste_types_collected": vendor.wastemanagement.waste_types_collected,
+                    "waste_management_cost": float(vendor.wastemanagement.waste_management_cost),
+                    "service_details": vendor.wastemanagement.service_details,
+                    "restroom_facilities": vendor.wastemanagement.restroom_facilities,
+                })
+
+            vendor_list.append(vendor_data)
+
+        return JsonResponse({"vendors": vendor_list}, safe=False)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+
+
 
 
 from django.shortcuts import render, redirect

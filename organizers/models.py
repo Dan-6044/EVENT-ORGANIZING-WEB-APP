@@ -44,10 +44,15 @@ class Vendor(models.Model):
         ('waste_management', 'Waste Management'),
     )
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)    
     vendor_type = models.CharField(max_length=20, choices=VENDOR_TYPES)
     description = models.TextField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # Associate vendor with user
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="vendors")
+    payment_cost = models.DecimalField(max_digits=10, decimal_places=2)
+    deposit = models.DecimalField(max_digits=10, decimal_places=2)
+    credit_days = models.PositiveIntegerField()
+    payment_status = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name

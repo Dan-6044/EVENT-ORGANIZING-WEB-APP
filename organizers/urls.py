@@ -21,6 +21,8 @@ urlpatterns = [
     
     path('add_vendor/', views.add_vendor, name='add_vendor'),
     path('view_vendors/', views.view_vendors, name='view_vendors'),
+    path("get-vendors/<int:event_id>/", views.get_vendors, name="get_vendors"),
+    
     
     path('add_ticket/', views.add_ticket, name='add_ticket'),
     path('view_tickets/', views.view_tickets, name='view_tickets'),
