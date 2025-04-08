@@ -1,0 +1,84 @@
+/* footer.css */
+
+/* Footer Styling */
+#custom-footer {
+    background-color: rgb(6, 6, 54) !important;
+    color: #fff;
+    padding: 40px 0;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Footer Logo */
+#custom-footer .footer-logo h2 {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+/* Footer Links */
+#custom-footer .footer-links {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+#custom-footer .footer-links a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    display: block;
+}
+
+#custom-footer .footer-links a:hover {
+    color: #ffcc00;
+}
+
+/* Footer Contact Section */
+#custom-footer .footer-contact h5 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+#custom-footer .footer-contact .contact-btn {
+    background-color: #ffcc00;
+    text-decoration: none;
+    color:#fff;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#custom-footer .footer-contact .contact-btn:hover {
+    background-color: #ff9900;
+    text-decoration: none;
+    color:#fff;
+}
+
+/* Footer Horizontal Line */
+#custom-footer .footer-line {
+    border-top: 1px solid #444;
+    margin-top: 20px;
+}
+
+/* Copyright Section */
+#custom-footer .copyright {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 767px) {
+    #custom-footer .footer-logo h2 {
+        font-size: 1.5rem;
+    }
+
+    #custom-footer .footer-links a {
+        font-size: 0.9rem;
+    }
+
+    #custom-footer .footer-contact h5 {
+        font-size: 1rem;
+    }
+}

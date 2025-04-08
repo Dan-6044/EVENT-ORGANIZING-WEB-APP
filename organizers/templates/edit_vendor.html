@@ -1,0 +1,281 @@
+{% extends 'master.html' %}
+
+{% block content %}
+
+<!-- add_event.html -->
+<div class="content flex-grow-1 p-4">
+    <div class="form-container mx-auto" style="max-width: 800px;">
+        <h2 class="form-heading">Edit Vendor</h2>
+        <form id="edit-vendor-form" action="{#" method="POST">
+            {% csrf_token %}
+
+            <!-- Select Vendor -->
+            <div class="col-md-6 form-group">
+                <label for="vendor_type" class="form-label">Vendor Type</label>
+                <select class="form-select" id="vendor_type" name="vendor_type" required>
+                    <option value="venue" {% if vendor.vendor_type == 'venue' %}selected{% endif %}>Venue</option>
+                    <option value="catering" {% if vendor.vendor_type == 'catering' %}selected{% endif %}>Catering</option>
+                    <option value="av" {% if vendor.vendor_type == 'av' %}selected{% endif %}>AV Equipment</option>
+                    <option value="decor" {% if vendor.vendor_type == 'decor' %}selected{% endif %}>Decor</option>
+                    <option value="entertainment" {% if vendor.vendor_type == 'entertainment' %}selected{% endif %}>Entertainment</option>
+                    <option value="security" {% if vendor.vendor_type == 'security' %}selected{% endif %}>Security</option>
+                    <option value="printing" {% if vendor.vendor_type == 'printing' %}selected{% endif %}>Printing</option>
+                    <option value="transportation" {% if vendor.vendor_type == 'transportation' %}selected{% endif %}>Transportation</option>
+                    <option value="waste_management" {% if vendor.vendor_type == 'waste_management' %}selected{% endif %}>Waste Management</option>
+                </select>
+            </div>
+
+            <!-- General Vendor Information -->
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="vendor_name" class="form-label">Vendor Name</label>
+                    <input type="text" class="form-control" id="vendor_name" name="vendor_name" placeholder="Enter Vendor Name" value="{{ vendor.vendor_name }}" required>
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="vendor_description" class="form-label">Vendor Description</label>
+                    <textarea class="form-control" id="vendor_description" name="vendor_description" placeholder="Enter Vendor Description" required>{{ vendor.vendor_description }}</textarea>
+                </div>
+            </div>
+
+            <!-- Dynamic Vendor Details -->
+            <div id="vendor-details"></div>
+
+            <!-- Payment Plan -->
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="payment_cost" class="form-label">Agreed Payment Cost</label>
+                    <input type="number" class="form-control" id="payment_cost" name="payment_cost" required value="{{ vendor.payment_cost }}">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="deposit" class="form-label">Deposit</label>
+                    <input type="number" class="form-control" id="deposit" name="deposit" required value="{{ vendor.deposit }}">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 form-group">
+                    <label for="credit_days" class="form-label">Credit Days</label>
+                    <input type="number" class="form-control" id="credit_days" name="credit_days" required value="{{ vendor.credit_days }}">
+                </div>
+                <div class="col-md-6 form-group">
+                    <label for="payment_status" class="form-label">Payment Status</label>
+                    <select class="form-select" id="payment_status" name="payment_status" required>
+                        <option value="not_paid" {% if vendor.payment_status == 'not_paid' %}selected{% endif %}>Not Paid</option>
+                        <option value="paid_half" {% if vendor.payment_status == 'paid_half' %}selected{% endif %}>Paid Half</option>
+                        <option value="paid_fully" {% if vendor.payment_status == 'paid_fully' %}selected{% endif %}>Paid Fully</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-footer mt-3">
+                <button type="submit" class="btn btn-primary btn-lg w-100">Update Vendor</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Event listener for vendor type selection
+    document.getElementById('vendor_type').addEventListener('change', function() {
+        const vendorType = this.value;
+        const vendorDetailsDiv = document.getElementById('vendor-details');
+        
+        vendorDetailsDiv.innerHTML = ''; // Clear existing dynamic fields
+
+        // Dynamically render fields based on vendor type
+        if (vendorType === 'venue') {
+            vendorDetailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="venue_address" class="form-label">Venue Address</label>
+                        <input type="text" class="form-control" id="venue_address" name="venue_address" placeholder="Enter Venue Address" value="{{ vendor.venue_address }}" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="venue_capacity" class="form-label">Venue Capacity</label>
+                        <input type="number" class="form-control" id="venue_capacity" name="venue_capacity" placeholder="Enter Venue Capacity" value="{{ vendor.venue_capacity }}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="venue_booking_time" class="form-label">Booking Date/Time</label>
+                        <input type="datetime-local" class="form-control" id="venue_booking_time" name="venue_booking_time" value="{{ vendor.venue_booking_time }}" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="venue_rental_cost" class="form-label">Cost of Venue Rental</label>
+                        <input type="number" class="form-control" id="venue_rental_cost" name="venue_rental_cost" value="{{ vendor.venue_rental_cost }}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="venue_requirements" class="form-label">Additional Requirements</label>
+                        <input type="text" class="form-control" id="venue_requirements" name="venue_requirements" value="{{ vendor.venue_requirements }}">
+                    </div>
+                </div>
+            `;
+        } else if (vendorType === 'catering') {
+            vendorDetailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="catering_type" class="form-label">Catering Type</label>
+                        <input type="text" class="form-control" id="catering_type" name="catering_type" value="{{ vendor.catering_type }}" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="menu_options" class="form-label">Menu Options</label>
+                        <textarea class="form-control" id="menu_options" name="menu_options" required>{{ vendor.menu_options }}</textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="dietary_preferences" class="form-label">Guest Dietary Preferences</label>
+                        <input type="text" class="form-control" id="dietary_preferences" name="dietary_preferences" value="{{ vendor.dietary_preferences }}">
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="catering_cost" class="form-label">Catering Costs</label>
+                        <input type="number" class="form-control" id="catering_cost" name="catering_cost" value="{{ vendor.catering_cost }}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="service_requirements" class="form-label">Service Requirements</label>
+                        <input type="text" class="form-control" id="service_requirements" name="service_requirements" value="{{ vendor.service_requirements }}">
+                    </div>
+                </div>
+            `;
+        } else if (vendorType === 'av') {
+            vendorDetailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="equipment_provided" class="form-label">Equipment Provided</label>
+                        <input type="text" class="form-control" id="equipment_provided" name="equipment_provided" value="{{ vendor.equipment_provided }}" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="av_cost" class="form-label">Cost of AV Equipment Rental</label>
+                        <input type="number" class="form-control" id="av_cost" name="av_cost" value="{{ vendor.av_cost }}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="av_requirements" class="form-label">AV Setup Requirements</label>
+                        <input type="text" class="form-control" id="av_requirements" name="av_requirements" value="{{ vendor.av_requirements }}">
+                    </div>
+                </div>
+            `;
+        } else if (vendorType === 'decor') {
+            vendorDetailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="decor_style" class="form-label">Decor Style</label>
+                        <input type="text" class="form-control" id="decor_style" name="decor_style" value="{{ vendor.decor_style }}" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="decor_cost" class="form-label">Decor Cost</label>
+                        <input type="number" class="form-control" id="decor_cost" name="decor_cost" value="{{ vendor.decor_cost }}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="decor_requirements" class="form-label">Decor Requirements</label>
+                        <input type="text" class="form-control" id="decor_requirements" name="decor_requirements" value="{{ vendor.decor_requirements }}">
+                    </div>
+                </div>
+            `;
+        } else if (vendorType === 'entertainment') {
+            vendorDetailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="entertainment_type" class="form-label">Entertainment Type</label>
+                        <input type="text" class="form-control" id="entertainment_type" name="entertainment_type" value="{{ vendor.entertainment_type }}" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="entertainment_cost" class="form-label">Entertainment Cost</label>
+                        <input type="number" class="form-control" id="entertainment_cost" name="entertainment_cost" value="{{ vendor.entertainment_cost }}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="performance_details" class="form-label">Performance Details</label>
+                        <textarea class="form-control" id="performance_details" name="performance_details">{{ vendor.performance_details }}</textarea>
+                    </div>
+                </div>
+            `;
+        } else if (vendorType === 'security') {
+            vendorDetailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="security_officers" class="form-label">Number of Security Officers</label>
+                        <input type="number" class="form-control" id="security_officers" name="security_officers" value="{{ vendor.security_officers }}" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="security_cost" class="form-label">Security Cost</label>
+                        <input type="number" class="form-control" id="security_cost" name="security_cost" value="{{ vendor.security_cost }}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="security_requirements" class="form-label">Security Requirements</label>
+                        <input type="text" class="form-control" id="security_requirements" name="security_requirements" value="{{ vendor.security_requirements }}">
+                    </div>
+                </div>
+            `;
+        } else if (vendorType === 'printing') {
+            vendorDetailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="printing_services" class="form-label">Printing Services</label>
+                        <input type="text" class="form-control" id="printing_services" name="printing_services" value="{{ vendor.printing_services }}" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="printing_cost" class="form-label">Printing Cost</label>
+                        <input type="number" class="form-control" id="printing_cost" name="printing_cost" value="{{ vendor.printing_cost }}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="printing_requirements" class="form-label">Printing Requirements</label>
+                        <input type="text" class="form-control" id="printing_requirements" name="printing_requirements" value="{{ vendor.printing_requirements }}">
+                    </div>
+                </div>
+            `;
+        } else if (vendorType === 'transportation') {
+            vendorDetailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="transportation_type" class="form-label">Transportation Type</label>
+                        <input type="text" class="form-control" id="transportation_type" name="transportation_type" value="{{ vendor.transportation_type }}" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="transportation_cost" class="form-label">Transportation Cost</label>
+                        <input type="number" class="form-control" id="transportation_cost" name="transportation_cost" value="{{ vendor.transportation_cost }}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="transportation_requirements" class="form-label">Transportation Requirements</label>
+                        <input type="text" class="form-control" id="transportation_requirements" name="transportation_requirements" value="{{ vendor.transportation_requirements }}">
+                    </div>
+                </div>
+            `;
+        } else if (vendorType === 'waste_management') {
+            vendorDetailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="waste_services" class="form-label">Waste Management Services</label>
+                        <input type="text" class="form-control" id="waste_services" name="waste_services" value="{{ vendor.waste_services }}" required>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label for="waste_management_cost" class="form-label">Waste Management Cost</label>
+                        <input type="number" class="form-control" id="waste_management_cost" name="waste_management_cost" value="{{ vendor.waste_management_cost }}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <label for="waste_management_requirements" class="form-label">Waste Management Requirements</label>
+                        <input type="text" class="form-control" id="waste_management_requirements" name="waste_management_requirements" value="{{ vendor.waste_management_requirements }}">
+                    </div>
+                </div>
+            `;
+        }
+    });
+</script>
+
+{% endblock %}

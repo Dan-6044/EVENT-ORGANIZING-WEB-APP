@@ -1,0 +1,129 @@
+.services-info-section{
+    background-color: #f9f9f9;
+    padding: 50px;
+    font-family: "Emilys Candy", serif;
+}
+
+/* Moving Text Section */
+.services-moving-text-container {
+    overflow: hidden; /* Prevents scrollbar */
+    position: relative;
+    background-color: #f9f9f9 !important; /* Background */
+    padding: 20px 0; /* Space around text */
+    margin-left: 0; /* Removes margins */
+    margin-right: 0; /* Removes margins */
+}
+
+.services-moving-text {
+    font-family: "Pacifico", cursive;
+    font-size: 90px; /* Very big text */
+    font-weight: 600; /* Maximum thickness */
+    text-align: center;
+    white-space: nowrap;
+    display: block;
+    color: rgba(3, 3, 109, 0.774) !important;
+    text-transform: uppercase;
+    letter-spacing: 2px; /* Keep letters close */
+
+    /* Crisp and sharp text */
+    text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.7);
+    
+    animation: moveText 20s linear infinite;
+}
+
+
+
+/* Keyframes for moving text from left to right */
+@keyframes moveText {
+    0% { transform: translateX(-100%); }  /* Starts off-screen on the left */
+    100% { transform: translateX(100%); } /* Moves fully to the right */
+}
+
+/* Services Info Section */
+.services-info-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+    padding: 50px;
+    background: #f9f9f9;
+}
+
+/* Services Feature Image */
+.services-feature-img {
+    width: 49%;
+    height: 80vh;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Services Text Content */
+.services-text-content {
+    margin-left: 20px;
+    flex: 1;
+    color: rgb(6, 6, 54) !important;
+}
+
+.services-text-content h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.services-text-content p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* Services Button and H5 in a Row */
+.services-btn-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Services Button Container */
+.services-btn-container {
+    display: flex;
+    gap: 20px; /* Creates space between buttons */
+    justify-content: flex-start; /* Aligns buttons to the left */
+    margin-top: 20px;
+    padding-left: 0; /* Ensures it starts at the left margin */
+}
+
+/* Services Buttons */
+.services-feature-btn {
+    background: transparent;
+    color: rgb(6, 6, 54) !important;
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 20px;
+    position: relative;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+}
+
+/* Underline Effect */
+.services-feature-btn::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 0;
+    height: 2px;
+    background: rgb(6, 6, 54) !important;
+    transition: width 0.3s ease-in-out;
+}
+
+/* Hover Effect */
+.services-feature-btn:hover {
+    color:rgb(6, 6, 54) !important;
+}
+
+.services-feature-btn:hover::after {
+    width: 100%; /* Expands the underline */
+}
+
+
+

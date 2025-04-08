@@ -1,0 +1,214 @@
+.feature-section {
+    background-color: rgb(6, 6, 54) !important;
+    padding: 50px;
+    
+}
+
+/* Parent container to hide overflow */
+.moving-text-container {
+    overflow: hidden; /* Prevents scrollbar */
+    position: relative;
+    background-color: rgb(6, 6, 54) !important; /* Background */
+    padding: 20px 0; /* Space around text */
+    margin-left: -30px; /* Removes margins */
+    margin-right: -30px; /* Removes margins */
+    
+}
+
+
+.moving-text {
+    font-family: 'Oswald', sans-serif; /* Tall and condensed */
+    font-size: 100px; /* Very big text */
+    font-weight: 700; /* Maximum thickness */
+    text-align: center;
+    white-space: nowrap;
+    display: block;
+    color: pink;
+    text-transform: uppercase;
+    letter-spacing: 2px; /* Keep letters close */
+
+    /* Crisp and sharp text */
+    text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.7);
+    
+    animation: moveText 20s linear infinite;
+}
+
+
+
+/* Keyframes for moving effect */
+@keyframes moveText {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+
+
+/* Sub-headings */
+.sub-heading {
+    display: flex;
+    justify-content: space-between;
+    margin: 40px 0;
+}
+
+.left-text{
+    font-size: 24px;
+    color: white;
+    font-family: "Emilys Candy", serif;
+    font-weight: 400;
+    font-style: normal;
+}
+.right-text {
+    font-size: 24px;
+    color: pink;
+    margin-bottom: 10px;
+}
+.btn-feature {
+    background-color: transparent;
+    color: white;
+    border: 2px solid white;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background-color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+    border-radius: 25px;
+    display: inline-block; /* Ensures proper spacing */
+    margin-top: 20px; /* Adds space between h3 and button */
+}
+
+/* Ensure carousel takes full width and 70vh height */
+.carousel {
+    max-width: 100vw;
+    height: 70vh;
+    margin: 0 auto;
+    overflow: hidden;
+    margin-bottom: 60px; /* Space between carousel and next section */
+}
+
+/* Ensure images take up 70vh height */
+.carousel-item img {
+    height: 70vh; /* Adjusted height */
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+/* Image width distribution */
+.img-60 {
+    width: 60vw; /* Centered large image */
+}
+
+.img-40 {
+    width: 40vw; /* Secondary image */
+}
+
+.img-20 {
+    width: 20vw; /* Smaller side images */
+}
+
+/* Space between images */
+.d-flex.gap-3 {
+    gap: 15px;
+}
+
+/* Navigation Arrows */
+.carousel-control-prev-icon, .carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+}
+
+
+/* Feature Highlights Section */
+.feature-highlights {
+    font-family: 'Playfair Display', serif;
+    text-align: left; /* Align content to the left */
+    margin-bottom: 40px; /* Space between this and the next section */
+    padding-left: 20px; /* Add some spacing from the edge */
+}
+
+/* Style for H2 */
+.feature-highlights h2 {
+    color: pink;
+    font-size: 36px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin: 0; /* Remove default margins */
+}
+
+/* Style for H4 */
+.feature-highlights h4 {
+    color: white;
+    font-size: 24px;
+    font-weight: 400;
+    margin-top: 5px; /* Reduce space between h2 and h4 */
+}
+
+/* Info Section */
+.info-section {
+    display: flex; /* Aligns image and text side by side */
+    align-items: center; /* Centers content vertically */
+    justify-content: space-between; /* Pushes content apart */
+    gap: 80px; /* Adds space between image and text */
+    padding: 20px; /* Adds spacing */
+}
+
+/* Feature Image */
+.feature-img {
+    width: 45%; /* Increases image size */
+    height: 70vh; /* Keeps a fixed height */
+    object-fit: cover; /* Ensures it fills the space without distortion */
+    border-radius: 10px; /* Optional: Adds rounded corners */
+}
+
+/* Text Content */
+.text-content {
+    flex: 1; /* Allows text content to take the remaining space */
+    color: white;
+}
+
+/* Feature Title */
+.text-content h1 {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Feature Description */
+.text-content p {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* Button and H5 in a Row */
+.btn-container {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Adds space between button and h5 */
+}
+
+/* Feature Button */
+.feature-btn {
+    background-color: transparent !important;
+    color: white !important;
+    border: 2px solid white;
+    
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+.feature-btn:hover {
+    background-color: rgba(255, 193, 7, 0.3) !important;
+    border-color: #ffc107 !important;
+}
+
+/* H5 Styling */
+.text-content h5 {
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    margin: 0; /* Removes default margin */
+}

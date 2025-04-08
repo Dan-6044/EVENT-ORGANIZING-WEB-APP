@@ -15,6 +15,53 @@ from .forms import EventForm  # You can also create a ModelForm to simplify
 def home(request):    
     return render(request, 'home.html')
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from organizers.models import Event, Vendor, Ticket, Sponsor, Order, Attendee
+from django.db.models import Sum
+
+@login_required
+def dashboard(request):
+    # Get all events created by the logged-in user
+    events = Event.objects.filter(user=request.user)
+
+    # Calculate the totals for the logged-in user
+    total_events = events.count()
+    total_vendors = Vendor.objects.filter(event__in=events).count()
+    tickets_sold = Order.objects.filter(event__in=events).count()
+    total_attendees = Attendee.objects.filter(event__in=events).count()  # Count attendees directly
+
+    # Per-event breakdown
+    event_data = []
+    for event in events:
+        vendors = Vendor.objects.filter(event=event).count()
+        tickets = Ticket.objects.filter(event=event).aggregate(qty=Sum('total_quantity'))['qty'] or 0
+        sponsors = Sponsor.objects.filter(event=event).count()
+        attendees = Attendee.objects.filter(event=event).count()  # Count attendees per event
+
+        event_data.append({
+            'event_name': event.event_name,
+            'event_venue': event.venue,
+            'event_date': event.event_date,
+            'total_vendors': vendors,
+            'total_tickets': tickets,
+            'total_sponsors': sponsors,
+            'total_attendees': attendees,
+        })
+
+    context = {
+        'event_data': event_data,
+        'total_events': total_events,
+        'total_vendors': total_vendors,
+        'tickets_sold': tickets_sold,
+        'total_attendees': total_attendees,
+    }
+
+    return render(request, 'dashboard.html', context)
+
+
+
+
 
 def signup(request):
     if request.method == 'POST':
@@ -65,9 +112,7 @@ def signin(request):
 
 
 
-@login_required
-def dashboard(request):
-    return render(request, 'dashboard.html')
+
 
 from django.contrib import messages
 from django.shortcuts import render, redirect
@@ -495,6 +540,81 @@ def get_vendors(request, event_id):
         return JsonResponse({"error": str(e)}, status=500)
 
 
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Vendor, Venue, Catering, AV, Decor, Entertainment, Security, Printing, Transportation, WasteManagement
+from .forms import VendorForm, VenueForm, CateringForm, AVForm, DecorForm, EntertainmentForm, SecurityForm, PrintingForm, TransportationForm, WasteManagementForm
+
+def edit_vendor(request, vendor_id):
+    # Fetch the Vendor object and related models using get_object_or_404 to avoid DoesNotExist error
+    vendor = get_object_or_404(Vendor, id=vendor_id)
+    venue = get_object_or_404(Venue, vendor=vendor) if vendor.vendor_type == "venue" else None
+    catering = get_object_or_404(Catering, vendor=vendor) if vendor.vendor_type == "catering" else None
+    av = get_object_or_404(AV, vendor=vendor) if vendor.vendor_type == "av" else None
+    decor = get_object_or_404(Decor, vendor=vendor) if vendor.vendor_type == "decor" else None
+    entertainment = get_object_or_404(Entertainment, vendor=vendor) if vendor.vendor_type == "entertainment" else None
+    security = get_object_or_404(Security, vendor=vendor) if vendor.vendor_type == "security" else None
+    printing = get_object_or_404(Printing, vendor=vendor) if vendor.vendor_type == "printing" else None
+    transportation = get_object_or_404(Transportation, vendor=vendor) if vendor.vendor_type == "transportation" else None
+    waste_management = get_object_or_404(WasteManagement, vendor=vendor) if vendor.vendor_type == "waste_management" else None
+
+    if request.method == 'POST':
+        # Populate the forms with the existing vendor data before saving changes
+        vendor_form = VendorForm(request.POST, instance=vendor)
+        venue_form = VenueForm(request.POST, instance=venue) if venue else None
+        catering_form = CateringForm(request.POST, instance=catering) if catering else None
+        av_form = AVForm(request.POST, instance=av) if av else None
+        decor_form = DecorForm(request.POST, instance=decor) if decor else None
+        entertainment_form = EntertainmentForm(request.POST, instance=entertainment) if entertainment else None
+        security_form = SecurityForm(request.POST, instance=security) if security else None
+        printing_form = PrintingForm(request.POST, instance=printing) if printing else None
+        transportation_form = TransportationForm(request.POST, instance=transportation) if transportation else None
+        waste_management_form = WasteManagementForm(request.POST, instance=waste_management) if waste_management else None
+
+        # Check if all forms are valid before saving
+        if all([vendor_form.is_valid(), (venue_form.is_valid() if venue_form else True), (catering_form.is_valid() if catering_form else True),
+                (av_form.is_valid() if av_form else True), (decor_form.is_valid() if decor_form else True),
+                (entertainment_form.is_valid() if entertainment_form else True), (security_form.is_valid() if security_form else True),
+                (printing_form.is_valid() if printing_form else True), (transportation_form.is_valid() if transportation_form else True),
+                (waste_management_form.is_valid() if waste_management_form else True)]):
+            vendor_form.save()
+            if venue_form: venue_form.save()
+            if catering_form: catering_form.save()
+            if av_form: av_form.save()
+            if decor_form: decor_form.save()
+            if entertainment_form: entertainment_form.save()
+            if security_form: security_form.save()
+            if printing_form: printing_form.save()
+            if transportation_form: transportation_form.save()
+            if waste_management_form: waste_management_form.save()
+
+            return redirect('vendor_list')  # Redirect to the vendor list after saving
+
+    else:
+        # Initialize the forms with the existing data
+        vendor_form = VendorForm(instance=vendor)
+        venue_form = VenueForm(instance=venue) if venue else None
+        catering_form = CateringForm(instance=catering) if catering else None
+        av_form = AVForm(instance=av) if av else None
+        decor_form = DecorForm(instance=decor) if decor else None
+        entertainment_form = EntertainmentForm(instance=entertainment) if entertainment else None
+        security_form = SecurityForm(instance=security) if security else None
+        printing_form = PrintingForm(instance=printing) if printing else None
+        transportation_form = TransportationForm(instance=transportation) if transportation else None
+        waste_management_form = WasteManagementForm(instance=waste_management) if waste_management else None
+
+    return render(request, 'edit_vendor.html', {
+        'vendor_form': vendor_form,
+        'venue_form': venue_form,
+        'catering_form': catering_form,
+        'av_form': av_form,
+        'decor_form': decor_form,
+        'entertainment_form': entertainment_form,
+        'security_form': security_form,
+        'printing_form': printing_form,
+        'transportation_form': transportation_form,
+        'waste_management_form': waste_management_form,
+    })
+
 
 
 from django.shortcuts import render, redirect
@@ -563,9 +683,109 @@ def add_ticket(request):
     return render(request, 'add_ticket.html', {'events': events})
 
 
+from .models import Event, Ticket
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
 @login_required
 def view_tickets(request):
-    return render(request, 'add_ticket.html')
+    """Displays events for the logged-in user along with their tickets."""
+    events = Event.objects.filter(user=request.user)  # Get events for the logged-in user
+    
+    # Fetch tickets for each event
+    tickets = Ticket.objects.filter(event__in=events)  # Get tickets for the events
+    return render(request, "view_tickets.html", {"events": events, "tickets": tickets})
+
+
+
+def get_tickets(request, event_id):
+    """Fetches all tickets for the selected event."""
+    tickets = Ticket.objects.filter(event_id=event_id)  # Get all tickets for the event
+
+    if not tickets.exists():
+        return JsonResponse({"error": "No tickets found for this event"}, status=404)
+
+    # Convert ticket data to JSON format
+    tickets_data = [
+        {
+            "id": ticket.id,
+            "event": ticket.event.id,
+            "ticket_type": ticket.ticket_type,
+            "early_bird_price": ticket.early_bird_price,
+            "regular_price": ticket.regular_price,
+            "vip_price": ticket.vip_price,
+            "vvip_price": ticket.vvip_price,
+            "ticket_description": ticket.ticket_description,
+            "total_quantity": ticket.total_quantity,
+            "available_quantity": ticket.available_quantity,
+            "min_quantity": ticket.min_quantity,
+            "max_quantity": ticket.max_quantity,
+            "early_bird_expiry_date": (
+                ticket.early_bird_expiry_date.strftime("%Y-%m-%dT%H:%M") if ticket.early_bird_expiry_date else ""
+            ),
+        }
+        for ticket in tickets
+    ]
+
+    return JsonResponse(tickets_data, safe=False)
+
+
+
+from django.shortcuts import get_object_or_404
+from .models import Ticket, Event
+
+def update_ticket(request):
+    if request.method == 'POST':
+        # Extract data from the form
+        ticket_id = request.POST.get('ticket_id')  # Assuming the ticket ID is being sent
+        event_id = request.POST.get('event')  # Assuming event ID is being sent
+
+        # Get the Ticket instance
+        ticket = get_object_or_404(Ticket, id=ticket_id)
+
+        # Get the Event instance using the event ID
+        event = get_object_or_404(Event, id=event_id)  # This fetches the Event object
+
+        # Now assign the event instance to the ticket
+        ticket.event = event
+
+        # Update other ticket fields here
+        ticket.description = request.POST.get('description')
+        ticket.early_bird_price = request.POST.get('early_bird_price')
+        ticket.regular_price = request.POST.get('regular_price')
+        ticket.vip_price = request.POST.get('vip_price')
+        ticket.vvip_price = request.POST.get('vvip_price')
+        ticket.total_quantity = request.POST.get('total_quantity')
+        ticket.available_quantity = request.POST.get('available_quantity')
+        ticket.min_quantity = request.POST.get('min_quantity')
+        ticket.max_quantity = request.POST.get('max_quantity')
+        ticket.early_bird_expiry = request.POST.get('early_bird_expiry')
+
+        # Save the ticket with the updated information
+        ticket.save()
+
+        # Return a success response
+        return JsonResponse({'success': True, 'message': 'Ticket updated successfully'})
+    else:
+        return JsonResponse({'success': False, 'message': 'Invalid request method'})
+
+
+from django.shortcuts import get_object_or_404, redirect
+from .models import Ticket
+
+@login_required
+def delete_ticket(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    
+    # Ensure the ticket belongs to the logged-in user or user is allowed to delete it
+    if ticket.event.user == request.user:
+        ticket.delete()
+        return redirect('view_tickets')  # Redirect back to the tickets view after deletion
+    
+    return redirect('view_tickets')  # If ticket does not belong to the user, just redirect
+
+
+
 
 
 from django.shortcuts import render, redirect
@@ -614,10 +834,90 @@ def add_schedule(request):
 
 
 
+from .models import Event, EventSchedule
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
 @login_required
 def view_schedules(request):
-    
-    return render(request, 'add_schedule.html')
+    """Displays events for the logged-in user along with their schedules."""
+    events = Event.objects.filter(user=request.user)  # Events created by the logged-in user
+    schedules = EventSchedule.objects.filter(event__in=events)  # Schedules for these events
+
+    return render(request, "view_schedules.html", {
+        "events": events,
+        "schedules": schedules
+    })
+
+
+from django.http import JsonResponse
+from .models import EventSchedule
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def get_schedules(request, event_id):
+    schedules = EventSchedule.objects.filter(event_id=event_id, event__user=request.user).values(
+        'id', 'session_type', 'start_time', 'end_time', 'description'
+    )
+
+    # Convert datetime fields to ISO string format
+    for schedule in schedules:
+        schedule['start_time'] = schedule['start_time'].isoformat() if schedule['start_time'] else None
+        schedule['end_time'] = schedule['end_time'].isoformat() if schedule['end_time'] else None
+
+    return JsonResponse({'schedules': list(schedules)})
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from .models import EventSchedule
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+import json
+
+@csrf_exempt
+@login_required
+def update_schedule(request, id):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        try:
+            # Convert start_time and end_time to datetime objects
+            start_time = timezone.datetime.fromisoformat(data['start_time'])
+            end_time = timezone.datetime.fromisoformat(data['end_time'])
+            
+            # Fetch the schedule from the database and update it
+            schedule = EventSchedule.objects.get(id=id, event__user=request.user)
+            schedule.session_type = data['session_type']
+            schedule.start_time = start_time
+            schedule.end_time = end_time
+            schedule.description = data['description']
+            schedule.save()
+
+            return JsonResponse({"status": "success"})
+        except EventSchedule.DoesNotExist:
+            return JsonResponse({"status": "not found"}, status=404)
+        except ValueError as e:
+            return JsonResponse({"status": "invalid datetime format", "message": str(e)}, status=400)
+    return JsonResponse({"status": "invalid method"}, status=405)
+
+from django.shortcuts import redirect
+from django.http import JsonResponse
+from .models import EventSchedule
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def delete_schedule(request, id):
+    try:
+        # Attempt to retrieve the schedule
+        schedule = EventSchedule.objects.get(id=id, event__user=request.user)
+        
+        # Delete the schedule
+        schedule.delete()
+
+        # Redirect to the 'view_schedules' page (you can replace 'view_schedules' with your actual URL name)
+        return redirect('view_schedules')  # Make sure 'view_schedules' is the correct URL name
+
+    except EventSchedule.DoesNotExist:
+        return JsonResponse({"status": "not found", "message": "Schedule not found or you do not have permission to delete it."}, status=404)
 
 
 
@@ -656,18 +956,113 @@ def add_sponsor(request):
     return render(request, 'add_sponsor.html', {'events': events})
 
 
+from .models import Sponsor, Event
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
 @login_required
 def view_sponsors(request):
+    """Displays sponsors for the logged-in user along with their events."""
+    events = Event.objects.filter(user=request.user)  # Events created by the logged-in user
+    sponsors = Sponsor.objects.filter(event__in=events)  # Sponsors related to these events
+
+    return render(request, "view_sponsors.html", {
+        "events": events,
+        "sponsors": sponsors
+    })
+
+from django.http import JsonResponse
+from .models import Sponsor
+
+def get_sponsors_for_event(request, event_id):
+    sponsors = Sponsor.objects.filter(event_id=event_id)
+    sponsor_data = []
+
+    for sponsor in sponsors:
+        sponsor_data.append({
+            'id': sponsor.id,
+            'name': sponsor.name,
+            'description': sponsor.description,
+            'logo_url': sponsor.logo.url if sponsor.logo else '',
+            'website_url': sponsor.website_url,
+            'event': {
+                'id': sponsor.event.id,
+                'event_name': sponsor.event.event_name
+            }
+        })
     
-    return render(request, 'add_sponsor.html')
+    return JsonResponse({'sponsors': sponsor_data})
+
+
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from .models import Sponsor
+from django.views.decorators.csrf import csrf_exempt
+import json
+
+# View for editing and updating sponsor data
+@csrf_exempt
+def edit_sponsor(request, sponsor_id):
+    sponsor = get_object_or_404(Sponsor, pk=sponsor_id)
+
+    if request.method == 'POST':
+        # Get the updated data from the form
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        website_url = request.POST.get('website_url')
+        logo = request.FILES.get('logo')
+
+        # Update the sponsor object with the new data
+        sponsor.name = name
+        sponsor.description = description
+        sponsor.website_url = website_url
+
+        # If a new logo is uploaded, save it to the sponsor's logo field
+        if logo:
+            sponsor.logo = logo
+        
+        sponsor.save()  # Save the updated sponsor to the database
+
+        # Return a JSON response with the updated sponsor data
+        sponsor_data = {
+            'id': sponsor.id,
+            'name': sponsor.name,
+            'description': sponsor.description,
+            'website_url': sponsor.website_url,
+            'logo_url': sponsor.logo.url if sponsor.logo else None,
+        }
+
+        return JsonResponse({'status': 'success', 'sponsor': sponsor_data})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import Sponsor
+
+def delete_sponsor(request, id):
+    if request.method == 'POST':
+        # Get the sponsor to delete
+        sponsor = get_object_or_404(Sponsor, id=id)
+        
+        # Delete the sponsor
+        sponsor.delete()
+        
+        # Return a success response
+        return JsonResponse({'status': 'success', 'message': 'Sponsor deleted successfully!'})
+    
+    # If method is not POST, return error response
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+
 
 
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from decimal import Decimal
 from .models import Event, Ticket, Attendee
-from decimal import Decimal
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def add_attendee(request):
     if request.method == 'POST':
         event_id = request.POST.get('event')
@@ -675,51 +1070,51 @@ def add_attendee(request):
         name = request.POST.get('name')
         email = request.POST.get('email')
         phone_number = request.POST.get('phone_number')
-        discount_percentage = request.POST.get('discount_percentage', 0)  # Default to 0 if not provided
+        description = request.POST.get('description')
+        discount_percentage = request.POST.get('discount_percentage', 0)
 
-        # Ensure all fields are filled
         if event_id and ticket_id and name and email and phone_number:
-            event = Event.objects.get(id=event_id)
-            ticket = Ticket.objects.get(id=ticket_id)
-
-            # Get the ticket price based on ticket type
-            if ticket.ticket_type == 'early_bird':
-                ticket_price = ticket.early_bird_price
-            elif ticket.ticket_type == 'vip':
-                ticket_price = ticket.vip_price
-            elif ticket.ticket_type == 'vvip':
-                ticket_price = ticket.vvip_price
-            else:  # Regular ticket
-                ticket_price = ticket.regular_price
-
-            # If ticket price is None, handle it
-            if ticket_price is None:
-                return JsonResponse({'error': 'Ticket price is not set for this ticket type'}, status=400)
-
-            # Ensure discount percentage is valid (i.e., a float or Decimal)
             try:
-                discount_percentage = Decimal(discount_percentage) / 100  # Convert to a decimal fraction
-            except (ValueError, TypeError):
-                return JsonResponse({'error': 'Invalid discount percentage'}, status=400)
+                event = Event.objects.get(id=event_id, user=request.user)
+                ticket = Ticket.objects.get(id=ticket_id)
 
-            # Apply discount only if discount_percentage is valid
-            final_ticket_price = ticket_price - (ticket_price * discount_percentage)
+                if ticket.ticket_type == 'early_bird':
+                    ticket_price = ticket.early_bird_price
+                elif ticket.ticket_type == 'vip':
+                    ticket_price = ticket.vip_price
+                elif ticket.ticket_type == 'vvip':
+                    ticket_price = ticket.vvip_price
+                else:
+                    ticket_price = ticket.regular_price
 
-            # Add the Attendee
-            Attendee.objects.create(
-                event=event,
-                ticket=ticket,
-                name=name,
-                email=email,
-                phone_number=phone_number,
-                ticket_price=final_ticket_price  # Store the final price
-            )
+                if ticket_price is None:
+                    return JsonResponse({'error': 'Ticket price is not set for this ticket type'}, status=400)
 
-            return redirect('add_attendee')
+                try:
+                    discount_percentage = Decimal(discount_percentage) / 100
+                except (ValueError, TypeError):
+                    return JsonResponse({'error': 'Invalid discount percentage'}, status=400)
 
-    events = Event.objects.all()
+                final_ticket_price = ticket_price - (ticket_price * discount_percentage)
+
+                Attendee.objects.create(
+                    event=event,
+                    ticket=ticket,
+                    name=name,
+                    email=email,
+                    phone_number=phone_number,
+                    discount_percentage=discount_percentage,
+                    description=description,
+                    ticket_price=final_ticket_price
+                )
+
+                return redirect('add_attendee')
+            except Event.DoesNotExist:
+                return JsonResponse({'error': 'Event not found or not owned by user'}, status=403)
+
+    # Filter events created by the logged-in user
+    events = Event.objects.filter(user=request.user)
     return render(request, 'add_attendee.html', {'events': events})
-
 
 
 def get_ticket_types(request):
@@ -768,22 +1163,186 @@ def get_ticket_types(request):
 
 
 
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import Attendee, Event
 
 @login_required
 def view_attendees(request):
-    return render(request, 'add_attendee.html')
+    """Displays attendees for the events created by the logged-in user."""
+    # Fetch events created by the logged-in user
+    events = Event.objects.filter(user=request.user)  # Events created by the logged-in user
+    
+    # Fetch attendees related to these events
+    attendees = Attendee.objects.filter(event__in=events)  # Attendees for these events
+    
+    # Return the rendered template with the events and attendees data
+    return render(request, "view_attendees.html", {
+        "events": events,
+        "attendees": attendees
+    })
 
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import Attendee, Event
+
+def get_attendees(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    
+    # Get attendees for this event
+    attendees = Attendee.objects.filter(event=event)
+    
+    # Prepare data for response
+    attendees_data = []
+    for attendee in attendees:
+        attendees_data.append({
+            'id': attendee.id,  # Add the attendee ID
+            'name': attendee.name,
+            'email': attendee.email,
+            'phone_number': attendee.phone_number,
+            'ticket_type': attendee.ticket.ticket_type,
+            'discount_percentage': attendee.discount_percentage,
+            'description': attendee.description,
+            'ticket_price': str(attendee.ticket_price),  # Convert to string for JSON serialization
+        })
+    
+    # Return the data as JSON
+    return JsonResponse({'attendees': attendees_data})
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+from django.utils.decorators import method_decorator
+import json
+
+from .models import Attendee
+
+@require_POST
+@csrf_exempt  # Optional if you're handling CSRF in JS (which you are)
+def update_attendee(request, id):
+    try:
+        data = json.loads(request.body)
+
+        attendee = Attendee.objects.get(id=id)
+        attendee.name = data.get('name', '')
+        attendee.email = data.get('email', '')
+        attendee.phone = data.get('phone', '')
+        attendee.ticket = data.get('ticket', '')
+        attendee.discount = data.get('discount', 0)
+        attendee.price = data.get('price', 0)
+        attendee.description = data.get('description', '')
+        attendee.save()
+
+        return JsonResponse({'status': 'success'})
+
+    except Attendee.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Attendee not found'}, status=404)
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+from django.http import JsonResponse
+from .models import Ticket
+
+def get_tickets_for_event(request, event_id):
+    try:
+        # Fetch tickets related to the event
+        tickets = Ticket.objects.filter(event_id=event_id)
+
+        # Prepare the ticket data
+        ticket_data = [{'id': ticket.id, 'ticket_type': ticket.ticket_type, 'available_quantity': ticket.available_quantity} for ticket in tickets]
+
+        # Return the data as JSON
+        return JsonResponse({'status': 'success', 'tickets': ticket_data})
+
+    except Exception as e:
+        # Return error if something goes wrong
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from .models import Attendee
+
+def delete_attendee(request, attendee_id):
+    if request.method == 'POST':
+        # Get the attendee object or return a 404 error if not found
+        attendee = get_object_or_404(Attendee, id=attendee_id)
+        
+        try:
+            # Delete the attendee
+            attendee.delete()
+            return JsonResponse({'status': 'success', 'message': 'Attendee deleted successfully.'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': f'Error deleting attendee: {str(e)}'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method.'})
+
+from django.core.serializers import serialize
+from django.db.models import Sum
+import json
+from django.shortcuts import render
+from .models import Event, Vendor, Ticket, Order
+from django.contrib.auth.decorators import login_required
+from random import randint
+from collections import defaultdict
 
 @login_required
 def reports(request):
+    # Get all events created by the logged-in user
+    events = Event.objects.filter(user=request.user)
+    events_data = []
+
+    for event in events:
+        # Count of vendors per event
+        vendors_count = Vendor.objects.filter(event=event).count()
+
+        # Total ticket sales for the event
+        total_tickets_sold = Ticket.objects.filter(event=event).aggregate(total=Sum('total_quantity'))['total'] or 0
+        
+        # Total attendees based on orders placed
+        total_attendees = Order.objects.filter(event=event).count()
+
+        # Generating random data for visualization
+        tickets_over_time = [randint(5, 20) for _ in range(4)]  # Sample ticket sales per month
+        vendors_per_event = [randint(1, 5) for _ in range(3)]  # Sample vendor count per event type
+        ticket_ranges = [randint(5, 20) for _ in range(3)]  # Sample distribution of ticket ranges
+
+        # Prepare the event data to be passed to the template
+        event_data = {
+            'id': event.id,
+            'event_name': event.event_name,
+            'event_type': event.event_type,
+            'vendors': vendors_count,
+            'tickets': total_tickets_sold,
+            'attendees': total_attendees,
+            'ticketsOverTime': tickets_over_time,  # Example data for line chart
+            'vendorsPerEvent': vendors_per_event,  # Example data for bar chart
+            'ticketRanges': ticket_ranges,  # Example data for histogram
+        }
+        events_data.append(event_data)
+
+    return render(request, 'reports.html', {
+        'events': events,
+        'events_data_json': json.dumps(events_data)  # Pass the data to the template
+    })
 
 
-    return render(request, 'reports.html')
-
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 @login_required
-def profile_settings(request):
-    return render(request, 'buywifi/profile_settings.html')
+def profile(request):
+    # Get the user's profile information
+    user = request.user
+
+   
+
+    context = {
+        'user': user,
+        
+    }
+    return render(request, 'profile.html', context)
 
 def logout_view(request):
     logout(request)

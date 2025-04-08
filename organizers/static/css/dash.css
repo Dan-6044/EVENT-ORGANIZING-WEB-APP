@@ -193,3 +193,7 @@ h6 {
     margin-bottom: 30px;  /* Adds space between the heading and the table */
 }
 
+#pieChart {
+    width: 50%; /* 50% of the parent container's width */
+    height: auto; /* Auto height, keeping aspect ratio */
+}

@@ -141,11 +141,11 @@ class Printing(models.Model):
 
 class Transportation(models.Model):
     vendor = models.OneToOneField(Vendor, on_delete=models.CASCADE)
-    transport_type = models.CharField(max_length=255)
+    transport_type = models.CharField(max_length=100, null=True, blank=True)
     transportation_cost = models.DecimalField(max_digits=10, decimal_places=2)
-    transport_schedule = models.TextField()
-    passenger_capacity = models.IntegerField()
-    special_requests = models.TextField()
+    transport_schedule = models.TextField(max_length=100, null=True, blank=True)
+    passenger_capacity = models.IntegerField(max_length=100, null=True, blank=True)
+    special_requests = models.TextField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return f"Transportation - {self.vendor.name}"
@@ -226,3 +226,44 @@ class Attendee(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Order(models.Model):
+    # Reference to the event the ticket is for
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    
+    # Reference to the ticket being purchased
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    
+    # User who placed the order (if authenticated)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    
+    # Information about the attendee
+    attendee_name = models.CharField(max_length=255)
+    attendee_email = models.EmailField()
+    attendee_phone = models.CharField(max_length=15)
+    
+    # Quantity of tickets purchased
+    ticket_quantity = models.PositiveIntegerField(default=1)
+    
+    # Total price of the order
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    # Payment method (e.g., card, mpesa)
+    payment_method = models.CharField(max_length=50, choices=[('card', 'Card'), ('mpesa', 'M-Pesa')])
+    
+    # Payment details, stored as JSON or TextField (use JSONField if using Django 3.1+)
+    payment_details = models.JSONField(default=dict, blank=True, null=True)
+    
+    # Date the order was placed
+    order_date = models.DateTimeField(auto_now_add=True)
+    
+    # Order status (e.g., pending, completed)
+    status = models.CharField(max_length=50, choices=[('pending', 'Pending'), ('completed', 'Completed'), ('failed', 'Failed')], default='pending')
+
+    def __str__(self):
+        # Correctly reference the event_name field in the Event model
+        return f"Order #{self.id} - {self.attendee_name} for {self.event.event_name} ({self.ticket.ticket_type})"
+    
+    class Meta:
+        ordering = ['-order_date']
+

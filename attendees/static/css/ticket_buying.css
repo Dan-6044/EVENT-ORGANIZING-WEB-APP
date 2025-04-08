@@ -1,0 +1,99 @@
+/* Background color for the whole page */
+.page-background {
+    background-color: #f0f2f5; /* Light background for the page */
+    padding-top: 0; /* Ensure the page starts at the top */
+}
+
+/* Styling for the event details container */
+.event-details-container {
+    background-color: #ffffff; /* White background for the event details */
+    padding: 40px 20px; /* Add padding to create space around text */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    margin-top: 0; /* No space above */
+    margin-bottom: 30px; /* Spacing from the bottom */
+}
+
+/* Styling for the event title */
+.event-details-container h1 {
+    color: #343a40; /* Dark text color */
+    font-size: 2.5rem; /* Large font size for the title */
+    font-weight: bold; /* Bold title */
+}
+
+/* Styling for the event date and location */
+.event-date, .event-location {
+    color: #6c757d; /* Subtle gray text for the date and location */
+    font-size: 1.2rem; /* Slightly larger text */
+}
+
+/* Additional hover effect for the title */
+.event-details-container h1:hover {
+    color: #007bff; /* Change to blue on hover */
+    cursor: pointer; /* Indicate it’s clickable */
+}
+
+/* Optional Custom Styles */
+.card {
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.ticket-info {
+    max-width: 250px; /* Limit width for ticket details */
+}
+
+.ticket-quantity input {
+    width: 60px;
+    text-align: center;
+}
+
+.buy-button {
+    margin-left: 10px;
+}
+
+.ticket-quantity {
+    display: flex;
+    align-items: center;
+}
+
+.ticket-quantity button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+}
+
+.btn-primary {
+    background-color: #4CAF50;
+    border-color: #4CAF50;
+}
+
+.btn-primary:hover {
+    background-color: #45a049;
+    border-color: #45a049;
+}
+
+.card-body {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.card-text {
+    font-size: 1rem;
+}
+
+.container {
+    padding-top: 50px; /* Adjust spacing if necessary */
+}

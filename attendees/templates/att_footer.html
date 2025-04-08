@@ -1,0 +1,42 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Link to Footer specific CSS -->
+<link rel="stylesheet" href="{% static 'css/att_footer.css' %}">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Custom Footer -->
+<footer id="custom-footer" class="custom-footer">
+    <div class="container">
+        <div class="row">
+            <!-- Logo Column -->
+            <div class="col-md-4 footer-logo">
+                <h2 class="text-white">EOS</h2>
+            </div>
+
+            <!-- Links Column -->
+            <div class="col-md-4 footer-links">
+                <a href="#">Home</a>
+                <a href="#">Services</a>
+                <a href="#">About Us</a>
+                <a href="#">Contact</a>
+            </div>
+
+            <!-- Contact Button Column -->
+            <div class="col-md-4 footer-contact">
+                <h5>Let's discuss ideas for your next event. We are quick to respond.</h5>
+                <a class="contact-btn" href="{% url 'contact_page' %}">Contact Us </a>
+            </div>
+        </div>
+
+        <!-- Horizontal Line -->
+        <hr class="footer-line">
+
+        <!-- Copyright Section -->
+        <div class="copyright">
+            <p>&copy; 2025 EOS. All Rights Reserved.</p>
+        </div>
+    </div>
+</footer>
+{% endblock %}

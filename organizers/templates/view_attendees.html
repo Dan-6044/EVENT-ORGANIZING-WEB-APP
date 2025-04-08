@@ -1,0 +1,456 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dash.css' %}">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- 🔹 Top Navbar -->
+<nav class="navbar px-3  fixed-top  shadow">
+    <h2 class="text-white">EOS</h2>
+    <span class="navbar-brand">EOS ORGANIZERS PANEL</span>
+    <div class="d-flex align-items-center">
+        <div class="dropdown">
+            <button class="btn p-0 border-0 rounded-circle" type="button" data-bs-toggle="dropdown">
+                <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}" 
+                    alt="Profile" 
+                     class="rounded-circle border border-secondary" 
+                     width="35" height="35">
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg p-3" style="width: 340px; left: auto; right: 0;">
+                <li><a class="dropdown-item text-start" href="#">My Profile</a></li>
+                <li><a class="dropdown-item text-start" href="#">My Account</a></li>
+                <hr class="mx-auto" style="width: 90%;">
+                <a href="{% url 'logout' %}" class="btn btn-primary text-danger" style="width: 90%;">Logout</a>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="d-flex">
+    <nav class="sidebar  text-dark  p-3">
+        <h4 class="text-center head ">EOS PANEL</h4>
+        
+        <!-- Dashboard Section -->
+        <h6 class="text-uppercase mt-3 text-white">Dashboard</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item my-1 {% if request.path == '/dashboard/' %}active{% endif %}">
+                <a class="nav-link d-flex align-items-center" href="{% url 'dashboard' %}">
+                    <i class="fas fa-home me-2"></i> Home
+                </a>
+            </li>
+            
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#eventsMenu">
+                    <span><i class="fas fa-microphone-alt"></i> Events</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_event/' or request.path == '/view_events/' %}show{% endif %}" id="eventsMenu">
+                    <a href="{% url 'view_events' %}" class="nav-link ms-3 text-white {% if request.path == '/view_events/' %}active{% endif %}">View Events</a>
+                    <a href="{% url 'add_event' %}" class="nav-link ms-3 text-white {% if request.path == '/add_event/' %}active{% endif %}">Add Event</a>
+                </div>
+            </li>         
+             
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#vendorsMenu">
+                    <span><i class="fas fa-truck"></i> Vendors</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_vendor/' or request.path == '/view_vendors/' %}show{% endif %}" id="vendorsMenu">
+                    <a href="{% url 'view_vendors' %}" class="nav-link ms-3 text-white {% if request.path == '/view_vendors/' %}active{% endif %}">View Vendors</a>
+                    <a href="{% url 'add_vendor' %}" class="nav-link ms-3 text-white {% if request.path == '/add_vendor/' %}active{% endif %}">Add Vendor</a>
+                </div>
+            </li>
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#ticketsMenu">
+                    <span><i class="fas fa-ticket-alt"></i> Tickets</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_ticket/' or request.path == '/view_tickets/' %}show{% endif %}" id="ticketsMenu">
+                    <a href="{% url 'view_tickets' %}" class="nav-link ms-3 text-white {% if request.path == '/view_tickets/' %}active{% endif %}">View Tickets</a>
+                    <a href="{% url 'add_ticket' %}" class="nav-link ms-3 text-white {% if request.path == '/add_ticket/' %}active{% endif %}">Add Ticket</a>
+                </div>
+            </li>  
+
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#schedulesMenu">
+                    <span><i class="fas fa-calendar-check"></i> Schedule</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_schedule/' or request.path == '/view_schedules/' %}show{% endif %}" id="schedulesMenu">
+                    <a href="{% url 'view_schedules' %}" class="nav-link ms-3 text-white {% if request.path == '/view_schedules/' %}active{% endif %}">View Schedules</a>
+                    <a href="{% url 'add_schedule' %}" class="nav-link ms-3 text-white {% if request.path == '/add_schedule/' %}active{% endif %}">Add Schedule</a>
+                </div>
+            </li>           
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#sponsorsMenu">
+                    <span><i class="fas fa-chart-bar"></i> Sponsor</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_sponsor/' or request.path == '/view_sponsors/' %}show{% endif %}" id="sponsorsMenu">
+                    <a href="{% url 'view_sponsors' %}" class="nav-link ms-3 text-white {% if request.path == '/view_sponsors/' %}active{% endif %}">View Sponsors</a>
+                    <a href="{% url 'add_sponsor' %}" class="nav-link ms-3 text-white {% if request.path == '/add_sponsor/' %}active{% endif %}">Add Sponsor</a>
+                </div>
+            </li>     
+
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#attendeesMenu">
+                    <span><i class="fas fa-theater-masks"></i> Event Attendee</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_attendee/' or request.path == '/view_attendees/' %}show{% endif %}" id="attendeesMenu">
+                    <a href="{% url 'view_attendees' %}" class="nav-link ms-3 text-white {% if request.path == '/view_attendees/' %}active{% endif %}">View Attendees</a>
+                    <a href="{% url 'add_attendee' %}" class="nav-link ms-3 text-white {% if request.path == '/add_attendee/' %}active{% endif %}">Add Attendee</a>
+                </div>
+            </li> 
+
+             <li class="nav-item my-1 {% if request.path == '/reports/' %}active{% endif %}">
+                <a class="nav-link d-flex align-items-center" href="{% url 'reports' %}">
+                    <i class="fas fa-bell me-2"></i> Reports
+                </a>
+            </li>                 
+        
+        </ul>
+
+        <!-- Account Options Section -->
+        <h6 class="text-uppercase mt-4 text-white">Account Options</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item my-1">
+                <a class="nav-link text-white" href="#profile"> <i class="fas fa-user"></i> Profile Settings</a>
+            </li>
+            <li class="nav-item my-1">
+                <a class="nav-link text-danger" href="{% url 'logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <div class="content flex-grow-1 p-4">
+            <div class="d-flex justify-content-center">
+                    <div class="col-md-6"> <!-- Increased width and centered -->
+                        <div class="card shadow-lg border-0 rounded-3">
+                            <div class="card-body text-center py-3">
+                                <i class="fas fa-calendar-alt fa-2x text-primary mb-2"></i>
+                                <h6 class="card-title fw-bold mb-2">Select Event</h6>
+                                <select id="eventDropdown" class="form-select">
+                                    <option value="">-- Select Event --</option>
+                                    {% for event in events %}
+                                        <option value="{{ event.id }}">{{ event.event_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+   
+    
+             <!-- Attendee Table -->
+                <div class="card mt-4 shadow-sm">
+                    <div class="card-header bg-light py-2">
+                        <i class="fas fa-users me-1"></i> Event Attendees
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-sm">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center">Attendee Name</th>
+                                        <th class="text-center">Email</th>
+                                        <th class="text-center">Phone Number</th>
+                                        <th class="text-center">Ticket</th>
+                                        <th class="text-center">Discount Percentage</th>
+                                        <th class="text-center">Ticket Price</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendeeTableBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center">Select an event to view attendees.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+    </div>
+
+</div>
+<!-- Edit Attendee Modal -->
+<div class="modal fade" id="editAttendeeModal" tabindex="-1" aria-labelledby="editAttendeeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="editAttendeeForm" method="post">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title text-primary w-100 text-center" id="editAttendeeModalLabel">Edit Attendee</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <!-- FIXED: name attribute added -->
+          <input type="hidden" id="editAttendeeId" name="id">
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="editAttendeeName" class="form-label">Attendee Name</label>
+              <input type="text" id="editAttendeeName" name="name" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label for="editAttendeeEmail" class="form-label">Email</label>
+              <input type="email" id="editAttendeeEmail" name="email" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="row g-3 mt-2">
+            <div class="col-md-6">
+              <label for="editAttendeePhone" class="form-label">Phone Number</label>
+              <input type="text" id="editAttendeePhone" name="phone" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label for="editAttendeeTicket" class="form-label">Ticket Type</label>
+              <input type="text" id="editAttendeeTicket" name="ticket" class="form-control" >
+            </div>
+          </div>
+
+          <div class="row g-3 mt-2">
+            <div class="col-md-6">
+              <label for="editAttendeeDiscount" class="form-label">Discount (%)</label>
+              <input type="number" id="editAttendeeDiscount" name="discount" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label for="editAttendeePrice" class="form-label">Ticket Price</label>
+              <input type="number" id="editAttendeePrice" name="price" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="mt-2">
+            <label for="editAttendeeDescription" class="form-label">Description</label>
+            <textarea id="editAttendeeDescription" name="description" class="form-control" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Update Attendee</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+function editAttendee(id, name, email, phone, ticket, discount, price, description) {
+    document.getElementById('editAttendeeId').value = id;
+    document.getElementById('editAttendeeName').value = name;
+    document.getElementById('editAttendeeEmail').value = email;
+    document.getElementById('editAttendeePhone').value = phone;
+    document.getElementById('editAttendeeTicket').value = ticket;
+    document.getElementById('editAttendeeDiscount').value = discount;
+    document.getElementById('editAttendeePrice').value = price;
+    document.getElementById('editAttendeeDescription').value = description;
+
+    const editModal = new bootstrap.Modal(document.getElementById('editAttendeeModal'));
+    editModal.show();
+}
+
+document.getElementById('editAttendeeForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const id = document.getElementById('editAttendeeId').value;
+    const csrfToken = getCSRFToken();
+
+    const updatedData = {
+        name: document.getElementById('editAttendeeName').value,
+        email: document.getElementById('editAttendeeEmail').value,
+        phone: document.getElementById('editAttendeePhone').value,
+        ticket: document.getElementById('editAttendeeTicket').value,
+        discount: document.getElementById('editAttendeeDiscount').value,
+        price: document.getElementById('editAttendeePrice').value,
+        description: document.getElementById('editAttendeeDescription').value
+    };
+
+    fetch(`/update-attendee/${id}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify(updatedData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const editModal = bootstrap.Modal.getInstance(document.getElementById('editAttendeeModal'));
+            editModal.hide();
+            alert('Attendee updated successfully!');
+            document.getElementById('eventDropdown').dispatchEvent(new Event('change'));
+        } else {
+            alert('Error: ' + (data.message || 'Unknown error.'));
+        }
+    })
+    .catch(error => {
+        console.error('Fetch error:', error);
+        alert('There was an error while updating the attendee.');
+    });
+});
+
+function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.getElementById('eventDropdown').addEventListener('change', function () {
+        var eventId = this.value;
+        
+        if (eventId) {
+            // Make AJAX call to fetch attendees
+            fetch(`/get_attendees/${eventId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    var tableBody = document.getElementById('attendeeTableBody');
+                    tableBody.innerHTML = '';  // Clear previous rows
+                    
+                    if (data.attendees && data.attendees.length > 0) {
+                        data.attendees.forEach(attendee => {
+                            var row = `<tr>
+                                        <td class="text-center">${attendee.name}</td>
+                                        <td class="text-center">${attendee.email}</td>
+                                        <td class="text-center">${attendee.phone_number}</td>
+                                        <td class="text-center">${attendee.ticket_type}</td>
+                                        <td class="text-center">${attendee.discount_percentage}%</td>
+                                        <td class="text-center">${attendee.ticket_price}</td>
+                                        <td class="text-center">
+                                           <button 
+                                                class="btn btn-primary btn-sm" 
+                                                onclick="editAttendee(
+                                                    '${attendee.id}',
+                                                    '${attendee.name}',
+                                                    '${attendee.email}',
+                                                    '${attendee.phone_number}',
+                                                    '${attendee.ticket_id}',
+                                                    '${attendee.discount_percentage}',
+                                                    '${attendee.ticket_price}',
+                                                    \`${attendee.description || ''}\`
+                                                )" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editAttendeeModal">
+                                                Edit
+                                            </button>
+                                             <button class="btn btn-danger btn-sm" onclick="deleteAttendee(${attendee.id})">Delete</button>
+                                        </td>
+                                    </tr>`;
+                            tableBody.innerHTML += row;
+                        });
+
+                        // Add event listeners for Edit and Delete buttons
+                        
+
+                        
+                    } else {
+                        tableBody.innerHTML = `<tr><td colspan="7" class="text-center">No attendees found.</td></tr>`;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching attendees:', error);
+                    alert('There was an error fetching the attendees.');
+                });
+        } else {
+            // Clear table when no event is selected
+            document.getElementById('attendeeTableBody').innerHTML = `<tr><td colspan="7" class="text-center">Select an event to view attendees.</td></tr>`;
+        }
+    });
+
+    
+    
+</script>
+
+<script>
+function deleteAttendee(attendeeId) {
+    if (confirm('Are you sure you want to delete this attendee?')) {
+        // Get CSRF token
+        const csrfToken = getCSRFToken();
+
+        fetch(`/delete-attendee/${attendeeId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert('Attendee deleted successfully!');
+                // Refresh the page after successful deletion
+                window.location.reload(); // This will reload the current page
+            } else {
+                alert('Error: ' + (data.message || 'Unknown error.'));
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting attendee:', error);
+            alert('There was an error while deleting the attendee.');
+        });
+    }
+}
+
+function getCSRFToken() {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    console.log("Extracted CSRF Token:", csrfToken);
+    return csrfToken;
+}
+
+</script>
+
+
+<script>
+    // Script to rotate chevron icons on collapse toggle
+    document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(item => {
+        item.addEventListener('click', function () {
+            let icon = this.querySelector('.rotate-icon');
+            if (icon) {
+                icon.classList.toggle('rotate-down');
+            }
+        });
+    });
+</script>
+<!-- Include jQuery, DataTables & Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<!-- Bootstrap 5 JS (Popper and Bootstrap) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"></script>
+
+
+<!-- Initialize DataTable -->
+<script>
+    $(document).ready(function() {
+        $('#datatablesSimple').DataTable({
+             "stateSave": true,
+            "paging": true,
+            "lengthMenu": [5, 10, 25, 50], // Show entries per page
+            "ordering": true, // Enable sorting on all columns
+            "info": true, // Footer info (e.g., Showing 1 to 10 of 50 entries)
+            "searching": true, // Enable search box
+            "language": {
+                "emptyTable": ""
+                "lengthMenu": " _MENU_ Show entries",
+                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "paginate": {
+                    "previous": "Previous",
+                    "next": "Next"
+                }
+            }
+        });
+    });
+</script>
+
+
+{% endblock %}

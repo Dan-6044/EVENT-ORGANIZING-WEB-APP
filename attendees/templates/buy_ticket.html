@@ -1,0 +1,13 @@
+{% extends 'master.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-5">Buy Ticket for {{ ticket.ticket_type }}</h1>
+    <p class="text-center">Price: ${{ ticket.ticket_price }}</p>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Buy Now</button>
+    </form>
+</div>
+{% endblock %}

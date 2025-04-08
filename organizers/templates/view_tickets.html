@@ -1,0 +1,535 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/dash.css' %}">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+
+<!-- 🔹 Top Navbar -->
+<nav class="navbar px-3  fixed-top  shadow">
+    <h2 class="text-white">EOS</h2>
+    <span class="navbar-brand">EOS ORGANIZERS PANEL</span>
+    <div class="d-flex align-items-center">
+        <div class="dropdown">
+            <button class="btn p-0 border-0 rounded-circle" type="button" data-bs-toggle="dropdown">
+                <img src="{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'images/avatar.png' %}{% endif %}" 
+                    alt="Profile" 
+                     class="rounded-circle border border-secondary" 
+                     width="35" height="35">
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow-lg p-3" style="width: 340px; left: auto; right: 0;">
+                <li><a class="dropdown-item text-start" href="#">My Profile</a></li>
+                <li><a class="dropdown-item text-start" href="#">My Account</a></li>
+                <hr class="mx-auto" style="width: 90%;">
+                <a href="{% url 'logout' %}" class="btn btn-primary text-danger" style="width: 90%;">Logout</a>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="d-flex">
+    <nav class="sidebar  text-dark  p-3">
+        <h4 class="text-center head ">EOS PANEL</h4>
+        
+        <!-- Dashboard Section -->
+        <h6 class="text-uppercase mt-3 text-white">Dashboard</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item my-1 {% if request.path == '/dashboard/' %}active{% endif %}">
+                <a class="nav-link d-flex align-items-center" href="{% url 'dashboard' %}">
+                    <i class="fas fa-home me-2"></i> Home
+                </a>
+            </li>
+            
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#eventsMenu">
+                    <span><i class="fas fa-microphone-alt"></i> Events</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_event/' or request.path == '/view_events/' %}show{% endif %}" id="eventsMenu">
+                    <a href="{% url 'view_events' %}" class="nav-link ms-3 text-white {% if request.path == '/view_events/' %}active{% endif %}">View Events</a>
+                    <a href="{% url 'add_event' %}" class="nav-link ms-3 text-white {% if request.path == '/add_event/' %}active{% endif %}">Add Event</a>
+                </div>
+            </li>         
+             
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#vendorsMenu">
+                    <span><i class="fas fa-truck"></i> Vendors</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_vendor/' or request.path == '/view_vendors/' %}show{% endif %}" id="vendorsMenu">
+                    <a href="{% url 'view_vendors' %}" class="nav-link ms-3 text-white {% if request.path == '/view_vendors/' %}active{% endif %}">View Vendors</a>
+                    <a href="{% url 'add_vendor' %}" class="nav-link ms-3 text-white {% if request.path == '/add_vendor/' %}active{% endif %}">Add Vendor</a>
+                </div>
+            </li>
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#ticketsMenu">
+                    <span><i class="fas fa-ticket-alt"></i> Tickets</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_ticket/' or request.path == '/view_tickets/' %}show{% endif %}" id="ticketsMenu">
+                    <a href="{% url 'view_tickets' %}" class="nav-link ms-3 text-white {% if request.path == '/view_tickets/' %}active{% endif %}">View Tickets</a>
+                    <a href="{% url 'add_ticket' %}" class="nav-link ms-3 text-white {% if request.path == '/add_ticket/' %}active{% endif %}">Add Ticket</a>
+                </div>
+            </li>  
+
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#schedulesMenu">
+                    <span><i class="fas fa-calendar-check"></i> Schedule</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_schedule/' or request.path == '/view_schedules/' %}show{% endif %}" id="schedulesMenu">
+                    <a href="{% url 'view_schedules' %}" class="nav-link ms-3 text-white {% if request.path == '/view_schedules/' %}active{% endif %}">View Schedules</a>
+                    <a href="{% url 'add_schedule' %}" class="nav-link ms-3 text-white {% if request.path == '/add_schedule/' %}active{% endif %}">Add Schedule</a>
+                </div>
+            </li>           
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#sponsorsMenu">
+                    <span><i class="fas fa-chart-bar"></i> Sponsor</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_sponsor/' or request.path == '/view_sponsors/' %}show{% endif %}" id="sponsorsMenu">
+                    <a href="{% url 'view_sponsors' %}" class="nav-link ms-3 text-white {% if request.path == '/view_sponsors/' %}active{% endif %}">View Sponsors</a>
+                    <a href="{% url 'add_sponsor' %}" class="nav-link ms-3 text-white {% if request.path == '/add_sponsor/' %}active{% endif %}">Add Sponsor</a>
+                </div>
+            </li>     
+
+            <li class="nav-item my-1">
+                <a class="nav-link d-flex justify-content-between align-items-center" data-bs-toggle="collapse" href="#attendeesMenu">
+                    <span><i class="fas fa-theater-masks"></i> Event Attendee</span> 
+                    <i class="fas fa-chevron-right rotate-icon"></i>
+                </a>
+                <div class="collapse {% if request.path == '/add_attendee/' or request.path == '/view_attendees/' %}show{% endif %}" id="attendeesMenu">
+                    <a href="{% url 'view_attendees' %}" class="nav-link ms-3 text-white {% if request.path == '/view_attendees/' %}active{% endif %}">View Attendees</a>
+                    <a href="{% url 'add_attendee' %}" class="nav-link ms-3 text-white {% if request.path == '/add_attendee/' %}active{% endif %}">Add Attendee</a>
+                </div>
+            </li> 
+
+             <li class="nav-item my-1 {% if request.path == '/reports/' %}active{% endif %}">
+                <a class="nav-link d-flex align-items-center" href="{% url 'reports' %}">
+                    <i class="fas fa-bell me-2"></i> Reports
+                </a>
+            </li>                 
+        
+        </ul>
+
+        <!-- Account Options Section -->
+        <h6 class="text-uppercase mt-4 text-white">Account Options</h6>
+        <ul class="nav flex-column">
+            <li class="nav-item my-1">
+                <a class="nav-link text-white" href="#profile"> <i class="fas fa-user"></i> Profile Settings</a>
+            </li>
+            <li class="nav-item my-1">
+                <a class="nav-link text-danger" href="{% url 'logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <div class="content flex-grow-1 p-4">
+            <div class="d-flex justify-content-center">
+                <div class="col-md-6"> <!-- Increased width and centered -->
+                    <div class="card shadow-lg border-0 rounded-3">
+                        <div class="card-body text-center py-3">
+                            <i class="fas fa-calendar-alt fa-2x text-primary mb-2"></i>
+                            <h6 class="card-title fw-bold mb-2">Select Event</h6>
+                            <select id="eventDropdown" class="form-select">
+                                <option value="">-- Select Event --</option>
+                                {% for event in events %}
+                                <option value="{{ event.id }}">{{ event.event_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+    
+                    <!-- Compact Ticket Data Table -->
+        <div class="card mb-3">
+            <div class="card-header bg-light py-2">
+                <i class="fas fa-ticket-alt me-1"></i> Ticket Management
+            </div>
+            <div class="card-body p-2">
+                <div class="table-responsive">
+                    <table id="datatablesTickets" class="table table-striped table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="text-center">Ticket Type</th>
+                                <th class="text-center">Description</th>
+                                <th class="text-center">Price</th>
+                                <th class="text-center">Total Quantity</th>
+                                <th class="text-center">Available</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticketTableBody">
+                            <tr>
+                                <td colspan="6" class="text-center">Select an event to view tickets.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- Edit Ticket Modal -->
+<div class="modal fade" id="editTicketModal" tabindex="-1" aria-labelledby="editTicketModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header d-flex justify-content-between align-items-center">
+                <h5 class="modal-title mx-auto text-info" id="editTicketModalLabel">Edit Ticket</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editTicketForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="edit_ticket_id" name="ticket_id">
+
+                    <!-- Event & Ticket Type -->
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="edit_event" class="form-label">Event</label>
+                            <select class="form-select" id="edit_event" name="event" required>
+                                {% for event in events %}
+                                    <option value="{{ event.id }}">{{ event.event_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 form-group">
+                            <label for="edit_ticket_type" class="form-label">Ticket Type</label>
+                            <select class="form-select" id="edit_ticket_type" name="ticket_type" required>
+                                <option value="regular">Regular</option>
+                                <option value="early_bird">Early Bird</option>
+                                <option value="vip">VIP</option>
+                                <option value="vvip">VVIP</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Fields -->
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="edit_early_bird_price" class="form-label">Early Bird Price</label>
+                            <input type="number" class="form-control" id="edit_early_bird_price" name="early_bird_price" required>
+                        </div>
+
+                        <div class="col-md-6 form-group">
+                            <label for="edit_regular_price" class="form-label">Regular Price</label>
+                            <input type="number" class="form-control" id="edit_regular_price" name="regular_price"required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="edit_vip_price" class="form-label">VIP Price</label>
+                            <input type="number" class="form-control" id="edit_vip_price" name="vip_price" required>
+                        </div>
+
+                        <div class="col-md-6 form-group">
+                            <label for="edit_vvip_price" class="form-label">VVIP Price</label>
+                            <input type="number" class="form-control" id="edit_vvip_price" name="vvip_price" required>
+                        </div>
+                    </div>
+
+                    <!-- Ticket Description -->
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <label for="edit_ticket_description" class="form-label">Ticket Description</label>
+                            <textarea class="form-control" id="edit_ticket_description" name="ticket_description" required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Quantity Fields -->
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="edit_total_quantity" class="form-label">Total Tickets</label>
+                            <input type="number" class="form-control" id="edit_total_quantity" name="total_quantity" required>
+                        </div>
+
+                        <div class="col-md-6 form-group">
+                            <label for="edit_available_quantity" class="form-label">Available Tickets</label>
+                            <input type="number" class="form-control" id="edit_available_quantity" name="available_quantity" required>
+                        </div>
+                    </div>
+
+                    <!-- Minimum and Maximum Quantity -->
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="edit_min_quantity" class="form-label">Min Quantity per Purchase</label>
+                            <input type="number" class="form-control" id="edit_min_quantity" name="min_quantity" required>
+                        </div>
+
+                        <div class="col-md-6 form-group">
+                            <label for="edit_max_quantity" class="form-label">Max Quantity per Purchase</label>
+                            <input type="number" class="form-control" id="edit_max_quantity" name="max_quantity" required>
+                        </div>
+                    </div>
+
+                    <!-- Early Bird Expiry Date (Optional) -->
+                    <div class="row" id="edit_early_bird_expiry_row" style="display:none;">
+                        <div class="col-md-6 form-group">
+                            <label for="edit_early_bird_expiry_date" class="form-label">Early Bird Expiry Date</label>
+                            <input type="datetime-local" class="form-control" id="edit_early_bird_expiry_date" name="early_bird_expiry_date">
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="saveTicketChanges">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add event listener for "Edit" buttons dynamically generated
+document.addEventListener('click', function(event) {
+    if (event.target && event.target.classList.contains('editTicketBtn')) {
+        // Get data from the button attributes
+        const ticketId = event.target.getAttribute('data-id');
+        const eventData = event.target.getAttribute('data-event');
+        const ticketType = event.target.getAttribute('data-type');
+        const description = event.target.getAttribute('data-description');
+        const earlyBirdPrice = event.target.getAttribute('data-early-bird-price');
+        const regularPrice = event.target.getAttribute('data-regular-price');
+        const vipPrice = event.target.getAttribute('data-vip-price');
+        const vvipPrice = event.target.getAttribute('data-vvip-price');
+        const totalQuantity = event.target.getAttribute('data-total');
+        const availableQuantity = event.target.getAttribute('data-available');
+        const minQuantity = event.target.getAttribute('data-min');
+        const maxQuantity = event.target.getAttribute('data-max');
+        const earlyBirdExpiry = event.target.getAttribute('data-expiry');
+
+        // Populate the modal fields with this data
+        document.getElementById('edit_ticket_id').value = ticketId;
+        document.getElementById('edit_event').value = eventData;
+        document.getElementById('edit_ticket_type').value = ticketType;
+        document.getElementById('edit_ticket_description').value = description;
+        document.getElementById('edit_early_bird_price').value = earlyBirdPrice;
+        document.getElementById('edit_regular_price').value = regularPrice;
+        document.getElementById('edit_vip_price').value = vipPrice;
+        document.getElementById('edit_vvip_price').value = vvipPrice;
+        document.getElementById('edit_total_quantity').value = totalQuantity;
+        document.getElementById('edit_available_quantity').value = availableQuantity;
+        document.getElementById('edit_min_quantity').value = minQuantity;
+        document.getElementById('edit_max_quantity').value = maxQuantity;
+        document.getElementById('edit_early_bird_expiry_date').value = earlyBirdExpiry || ''; // Optional field
+
+        // Disable/Enable prices based on ticket type
+        togglePriceFields(ticketType);
+
+        // Show the modal
+        var editModal = new bootstrap.Modal(document.getElementById('editTicketModal'));
+        editModal.show();
+    }
+});
+
+function togglePriceFields(ticketType) {
+    // Get price fields
+    const earlyBirdPriceField = document.getElementById('edit_early_bird_price');
+    const regularPriceField = document.getElementById('edit_regular_price');
+    const vipPriceField = document.getElementById('edit_vip_price');
+    const vvipPriceField = document.getElementById('edit_vvip_price');
+    const earlyBirdExpiryRow = document.getElementById('edit_early_bird_expiry_row');
+
+    // Reset the input fields to be enabled
+    earlyBirdPriceField.disabled = false;
+    regularPriceField.disabled = false;
+    vipPriceField.disabled = false;
+    vvipPriceField.disabled = false;
+    earlyBirdExpiryRow.style.display = 'none';
+
+    // Logic to disable prices based on ticket type
+    if (ticketType === 'regular') {
+        // Disable all except the regular price
+        earlyBirdPriceField.disabled = true;
+        vipPriceField.disabled = true;
+        vvipPriceField.disabled = true;
+    } else if (ticketType === 'early_bird') {
+        // Enable early bird price and disable others
+        regularPriceField.disabled = true;
+        vipPriceField.disabled = true;
+        vvipPriceField.disabled = true;
+        earlyBirdExpiryRow.style.display = 'block'; // Show early bird expiry
+    } else if (ticketType === 'vip') {
+        // Enable VIP price and disable others
+        earlyBirdPriceField.disabled = true;
+        regularPriceField.disabled = true;
+        vvipPriceField.disabled = true;
+    } else if (ticketType === 'vvip') {
+        // Enable VVIP price and disable others
+        earlyBirdPriceField.disabled = true;
+        regularPriceField.disabled = true;
+        vipPriceField.disabled = true;
+    }
+}
+
+
+// Handle the form submission (Save Changes)
+document.getElementById('editTicketForm').addEventListener('submit', function(event) {
+    event.preventDefault();  // Prevent the form from submitting the default way
+
+    const formData = new FormData(this);
+
+    fetch('/update-ticket/', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            location.reload();  // Reload the page to reflect the changes
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('There was an error updating the ticket.');
+    });
+});
+</script>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("eventDropdown").addEventListener("change", function() {
+        let eventId = this.value;
+        let ticketTableBody = document.getElementById("ticketTableBody");
+
+        if (!eventId) {
+            ticketTableBody.innerHTML = '<tr><td colspan="6" class="text-center">Select an event to view tickets.</td></tr>';
+            return;
+        }
+
+        // Fetch tickets for the selected event
+        fetch(`/get-tickets/${eventId}/`)
+        .then(response => response.json())
+        .then(data => {
+            let rows = "";
+            if (data.length > 0) {
+                data.forEach(ticket => {
+                    // Determine the correct price based on the ticket type
+                    let price = "";
+                    switch (ticket.ticket_type) {
+                        case "early_bird":
+                            price = ticket.early_bird_price ? `$${ticket.early_bird_price}` : "N/A";
+                            break;
+                        case "regular":
+                            price = ticket.regular_price ? `$${ticket.regular_price}` : "N/A";
+                            break;
+                        case "vip":
+                            price = ticket.vip_price ? `$${ticket.vip_price}` : "N/A";
+                            break;
+                        case "vvip":
+                            price = ticket.vvip_price ? `$${ticket.vvip_price}` : "N/A";
+                            break;
+                        default:
+                            price = "N/A";
+                    }
+
+                    rows += `
+                        <tr>
+                            <td>${ticket.ticket_type.replace("_", " ").toUpperCase()}</td>
+                            <td>${ticket.ticket_description}</td>
+                            <td>${price}</td>
+                            <td>${ticket.total_quantity}</td>
+                            <td>${ticket.available_quantity}</td>
+                            <td>
+                                 <button type="button" class="btn btn-warning btn-sm editTicketBtn"
+                                    data-bs-toggle="modal" data-bs-target="#editTicketModal" 
+                                    data-id="${ticket.id}"
+                                    data-event="${ticket.event}"
+                                    data-type="${ticket.ticket_type}"
+                                    data-description="${ticket.ticket_description}"
+                                    data-early-bird-price="${ticket.early_bird_price}"
+                                    data-regular-price="${ticket.regular_price}"
+                                    data-vip-price="${ticket.vip_price}"
+                                    data-vvip-price="${ticket.vvip_price}"
+                                    data-total="${ticket.total_quantity}"
+                                    data-available="${ticket.available_quantity}"
+                                    data-min="${ticket.min_quantity}"
+                                    data-max="${ticket.max_quantity}"
+                                    data-expiry="${ticket.early_bird_expiry_date}">
+                                    Edit
+                                </button>
+                                <!-- Dynamically create delete button -->
+                                <a href="/delete-ticket/${ticket.id}/" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Are you sure you want to delete this ticket?')">
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } else {
+                rows = '<tr><td colspan="6" class="text-center">No tickets available for this event.</td></tr>';
+            }
+            ticketTableBody.innerHTML = rows;
+        })
+        .catch(error => console.error("Error fetching tickets:", error));
+    });
+});
+</script>
+
+<script>
+    // Script to rotate chevron icons on collapse toggle
+    document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(item => {
+        item.addEventListener('click', function () {
+            let icon = this.querySelector('.rotate-icon');
+            if (icon) {
+                icon.classList.toggle('rotate-down');
+            }
+        });
+    });
+</script>
+<!-- Include jQuery, DataTables & Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<!-- Bootstrap 5 JS (Popper and Bootstrap) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"></script>
+
+
+<!-- Initialize DataTable -->
+<script>
+    $(document).ready(function() {
+        $('#datatablesSimple').DataTable({
+             "stateSave": true,
+            "paging": true,
+            "lengthMenu": [5, 10, 25, 50], // Show entries per page
+            "ordering": true, // Enable sorting on all columns
+            "info": true, // Footer info (e.g., Showing 1 to 10 of 50 entries)
+            "searching": true, // Enable search box
+            "language": {
+                "emptyTable": ""
+                "lengthMenu": " _MENU_ Show entries",
+                "info": "Showing _START_ to _END_ of _TOTAL_ entries",
+                "paginate": {
+                    "previous": "Previous",
+                    "next": "Next"
+                }
+            }
+        });
+    });
+</script>
+
+
+{% endblock %}

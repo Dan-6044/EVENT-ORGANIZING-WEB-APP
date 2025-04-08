@@ -1,0 +1,43 @@
+<!-- templates/ticket_email_template.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Your Ticket for {{ event_name }}</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: white; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); padding: 30px;">
+        <h2 style="color: #333;">🎫 Your Ticket for {{ event_name }}</h2>
+        <p>Dear <strong>{{ attendee_name }}</strong>,</p>
+        <p>Thank you for purchasing a ticket to <strong>{{ event_name }}</strong>!</p>
+
+        <table style="width: 100%; margin-top: 20px; border-collapse: collapse;">
+            <tr>
+                <td><strong>🎟 Ticket Type:</strong></td>
+                <td>{{ ticket_type }}</td>
+            </tr>
+            <tr>
+                <td><strong>🧍 Quantity:</strong></td>
+                <td>{{ ticket_quantity }}</td>
+            </tr>
+            <tr>
+                <td><strong>💰 Total Price:</strong></td>
+                <td>${{ total_price }}</td>
+            </tr>
+            <tr>
+                <td><strong>📱 Payment Method:</strong></td>
+                <td>{{ payment_method }}</td>
+            </tr>
+            <tr>
+                <td><strong>📅 Event Date:</strong></td>
+                <td>{{ event_date }}</td>
+            </tr>
+        </table>
+
+        <p style="margin-top: 30px;">We look forward to seeing you at the event!</p>
+        <p>If you have any questions, feel free to contact us.</p>
+
+        <p style="margin-top: 40px; font-size: 14px; color: #888;">Sent from {{ organizer_email }}</p>
+    </div>
+</body>
+</html>

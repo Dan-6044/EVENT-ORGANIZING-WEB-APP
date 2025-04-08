@@ -136,4 +136,27 @@ class AttendeeAdmin(admin.ModelAdmin):
 
 admin.site.register(Attendee, AttendeeAdmin)
 
+from django.contrib import admin
+from .models import Order
+
+# Customize the display of orders in the admin panel
+class OrderAdmin(admin.ModelAdmin):
+    # Modify list_display to show event name by accessing it from the related event model
+    list_display = ('attendee_name', 'event_name', 'ticket', 'ticket_quantity', 'total_price', 'payment_method')
+    
+    # Modify search_fields to include event_name from the related event model
+    search_fields = ('attendee_name', 'attendee_email', 'event__event_name', 'ticket__ticket_type')
+
+    # Add list_filter for payment_method and event
+    list_filter = ('payment_method', 'event')
+
+    # Custom method to show event_name in the list display
+    def event_name(self, obj):
+        return obj.event.event_name  # Access the event_name field of the related Event object
+    event_name.short_description = 'Event Name'  # Optional: Customize the column name in the admin interface
+
+# Register the Order model with the customized admin interface
+admin.site.register(Order, OrderAdmin)
+
+
 

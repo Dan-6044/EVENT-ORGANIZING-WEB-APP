@@ -1,0 +1,30 @@
+{% extends 'master.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/att_tickets.css' %}">
+
+<div class="container my-5" id="tickets-section">
+    <h1 class="text-center mb-5">Upcoming Events</h1>
+    <div class="row">
+        {% for detail in event_details %}
+        <div class="col-md-3 mb-4">
+            <a href="{% url 'ticket_buying_page' detail.event.id %}" class="text-decoration-none">
+                <div class="card position-relative event-container">
+                    <button class="event-date-btn position-absolute top-0 start-0 ms-3 mt-3">
+                        {{ detail.event.event_date|date:"F j, Y" }}
+                    </button>
+                    <img src="{{ detail.event.poster.url }}" class="card-img-top" alt="{{ detail.event.event_name }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ detail.event.event_name }}</h5>
+                        <p class="card-text">Price: ${{ detail.ticket_price }}</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+{% endblock %}

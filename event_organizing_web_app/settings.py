@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'organizers'
+    'organizers',
+    'attendees'
 ]
 
 MIDDLEWARE = [
@@ -71,6 +72,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'event_organizing_web_app.wsgi.application'
 
 
+# settings.py
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'fastproadmn@gmail.com'  # Replace with your email
+EMAIL_HOST_PASSWORD = 'tpak utok lvpn wout'  # Replace with your email password or app password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 

@@ -1,0 +1,94 @@
+/* Only target the tickets section */
+#tickets-section .event-container {
+    border: 1px solid #ddd;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+    height: 300px; /* Reduce height */
+}
+
+#tickets-section .event-container:hover {
+    transform: translateY(-10px); /* Hover effect */
+}
+
+#tickets-section .event-poster {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+#tickets-section .event-details {
+    margin-top: 15px;
+}
+
+#tickets-section .event-details h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+#tickets-section .ticket-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+#tickets-section .btn-primary {
+    background-color: #ffcc00;
+    border: none;
+    font-weight: bold;
+    padding: 10px 20px;
+    text-transform: uppercase;
+}
+
+#tickets-section .btn-primary:hover {
+    background-color: #ff9900;
+}
+
+#tickets-section .card {
+    position: relative;
+}
+
+/* Style the event date button */
+#tickets-section .event-date-btn {
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    color: white;
+    font-size: 1rem;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 50px; /* Rounded corners */
+    z-index: 10;
+}
+
+/* Card Image and layout adjustments */
+#tickets-section .card-img-top {
+    object-fit: cover;
+    height: 200px; /* Adjust image height */
+    width: 100%;
+}
+
+/* Adjust for 4 cards in a row */
+#tickets-section .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Adjust space between items */
+}
+
+/* Style for small-sized cards */
+#tickets-section .col-md-3 {
+    flex: 1 1 23%; /* Makes each card take about 23% width */
+    max-width: 23%; /* Ensures the width is capped at 23% */
+}
+
+/* Reduce the space between heading and containers */
+#tickets-section h1 {
+    margin-bottom: 30px; /* Reduced space between heading and container */
+}
+
+/* Reduce space at the top of the page */
+#tickets-section .container {
+    padding-top: 30px; /* Adjust the space from the hero section */
+}

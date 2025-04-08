@@ -1,0 +1,40 @@
+{% extends 'master.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1>User Profile</h1>
+        
+        <!-- Profile details -->
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Personal Information</h3>
+                <ul>
+                    <li><strong>Username:</strong> {{ user.username }}</li>
+                    <li><strong>Email:</strong> {{ user.email }}</li>
+                    <li><strong>First Name:</strong> {{ user.first_name }}</li>
+                    <li><strong>Last Name:</strong> {{ user.last_name }}</li>
+                </ul>
+            </div>
+
+            <div class="col-md-6">
+                <h3>Subscription Details</h3>
+                <ul>
+                    <li><strong>Subscription Type:</strong> {{ user.profile.subscription_type }}</li>
+                    <li><strong>Subscription Start Date:</strong> {{ user.profile.subscription_start_date }}</li>
+                    <li><strong>Subscription Expiry Date:</strong> {{ user.profile.subscription_end_date }}</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col">
+                <h3>Update Profile</h3>
+                <form method="POST" action="#">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
