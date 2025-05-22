@@ -22,8 +22,9 @@ urlpatterns = [
     path('add_vendor/', views.add_vendor, name='add_vendor'),
     path('view_vendors/', views.view_vendors, name='view_vendors'),
     path("get-vendors/<int:event_id>/", views.get_vendors, name="get_vendors"),
-    path('edit_vendor/<int:vendor_id>/', views.edit_vendor, name='edit_vendor'),
-    
+    path("get_vendor_details/<int:vendor_id>/", views.get_vendor_details, name="get_vendor_details"),
+    path('update_vendor/<int:vendor_id>/', views.update_vendor, name='update_vendor'),    
+    path('delete_vendor/<int:vendor_id>/', views.delete_vendor, name='delete_vendor'),    
     
     
     path('add_ticket/', views.add_ticket, name='add_ticket'),
@@ -35,7 +36,7 @@ urlpatterns = [
     path('add_schedule/', views.add_schedule, name='add_schedule'),
     path('view_schedules/', views.view_schedules, name='view_schedules'),
     path('get-schedules/<int:event_id>/', views.get_schedules, name='get_schedules'),
-    path('update-schedule/<int:id>/', views.update_schedule, name='update_schedule'),
+     path('update_schedule/<int:schedule_id>/', views.update_schedule, name='update_schedule'),
     path('delete-schedule/<int:id>/', views.delete_schedule, name='delete_schedule'),
 
 
@@ -48,8 +49,9 @@ urlpatterns = [
      path('add_attendee/', views.add_attendee, name='add_attendee'),
       path('get_ticket_types/', views.get_ticket_types, name='get_ticket_types'),
      path('view_attendees/', views.view_attendees, name='view_attendees'),
+     path('get_attendee_details/<int:attendee_id>/', views.get_attendee_details, name='get_attendee_details'),
       path('get_attendees/<int:event_id>/', views.get_attendees, name='get_attendees'),
-       path('update-attendee/<int:id>/', views.update_attendee, name='update_attendee'),
+        path('update-attendee/<int:attendee_id>/', views.update_attendee, name='update_attendee'),
        path('get-tickets-for-event/<int:event_id>/', views.get_tickets_for_event, name='get_tickets_for_event'),
         path('delete-attendee/<int:attendee_id>/', views.delete_attendee, name='delete_attendee'),
     

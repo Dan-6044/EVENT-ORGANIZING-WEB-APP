@@ -121,7 +121,7 @@
         <h6 class="text-uppercase mt-4 text-white">Account Options</h6>
         <ul class="nav flex-column">
             <li class="nav-item my-1">
-                <a class="nav-link text-white" href="#profile"> <i class="fas fa-user"></i> Profile Settings</a>
+                <a class="nav-link text-white" href="{% url 'profile' %}"> <i class="fas fa-user"></i> Profile Settings</a>
             </li>
             <li class="nav-item my-1">
                 <a class="nav-link text-danger" href="{% url 'logout' %}"> <i class="fas fa-sign-out-alt"></i> Logout</a>
@@ -193,6 +193,7 @@
         <div class="modal-body">
           <!-- FIXED: name attribute added -->
           <input type="hidden" id="editAttendeeId" name="id">
+          <input type="hidden" id="editAttendeeTicketId" name="ticket_id">
 
           <div class="row g-3">
             <div class="col-md-6">
@@ -212,7 +213,8 @@
             </div>
             <div class="col-md-6">
               <label for="editAttendeeTicket" class="form-label">Ticket Type</label>
-              <input type="text" id="editAttendeeTicket" name="ticket" class="form-control" >
+              <!-- This field will now hold the ticket name instead of the ticket ID -->
+              <input type="text" id="editAttendeeTicket" name="ticket" class="form-control" readonly>
             </div>
           </div>
 
@@ -241,19 +243,36 @@
     </div>
   </div>
 </div>
-<script>
-function editAttendee(id, name, email, phone, ticket, discount, price, description) {
-    document.getElementById('editAttendeeId').value = id;
-    document.getElementById('editAttendeeName').value = name;
-    document.getElementById('editAttendeeEmail').value = email;
-    document.getElementById('editAttendeePhone').value = phone;
-    document.getElementById('editAttendeeTicket').value = ticket;
-    document.getElementById('editAttendeeDiscount').value = discount;
-    document.getElementById('editAttendeePrice').value = price;
-    document.getElementById('editAttendeeDescription').value = description;
 
-    const editModal = new bootstrap.Modal(document.getElementById('editAttendeeModal'));
-    editModal.show();
+
+
+<script>
+function editAttendee(attendeeId) {
+    fetch(`/get_attendee_details/${attendeeId}/`)
+        .then(response => response.json())
+        .then(data => {
+            // Populate the form fields with attendee data
+            document.getElementById('editAttendeeId').value = data.id;
+            document.getElementById('editAttendeeName').value = data.name;
+            document.getElementById('editAttendeeEmail').value = data.email;
+            document.getElementById('editAttendeePhone').value = data.phone_number;
+            
+            // Populate the ticket name (not the ID) and set the hidden ticket ID
+            document.getElementById('editAttendeeTicket').value = data.ticket_name;
+            document.getElementById('editAttendeeTicketId').value = data.ticket_id;  // Hidden field to store ticket ID
+
+            document.getElementById('editAttendeeDiscount').value = data.discount_percentage;
+            document.getElementById('editAttendeePrice').value = data.ticket_price;
+            document.getElementById('editAttendeeDescription').value = data.description;
+
+            // Show the modal with the populated data
+            const editModal = new bootstrap.Modal(document.getElementById('editAttendeeModal'));
+            editModal.show();
+        })
+        .catch(error => {
+            console.error('Error fetching attendee data:', error);
+            alert('Failed to load attendee details.');
+        });
 }
 
 document.getElementById('editAttendeeForm').addEventListener('submit', function (e) {
@@ -266,7 +285,7 @@ document.getElementById('editAttendeeForm').addEventListener('submit', function 
         name: document.getElementById('editAttendeeName').value,
         email: document.getElementById('editAttendeeEmail').value,
         phone: document.getElementById('editAttendeePhone').value,
-        ticket: document.getElementById('editAttendeeTicket').value,
+        ticket: document.getElementById('editAttendeeTicketId').value,  // Ensure this is the ID, not the name
         discount: document.getElementById('editAttendeeDiscount').value,
         price: document.getElementById('editAttendeePrice').value,
         description: document.getElementById('editAttendeeDescription').value
@@ -328,20 +347,12 @@ function getCSRFToken() {
                                         <td class="text-center">
                                            <button 
                                                 class="btn btn-primary btn-sm" 
-                                                onclick="editAttendee(
-                                                    '${attendee.id}',
-                                                    '${attendee.name}',
-                                                    '${attendee.email}',
-                                                    '${attendee.phone_number}',
-                                                    '${attendee.ticket_id}',
-                                                    '${attendee.discount_percentage}',
-                                                    '${attendee.ticket_price}',
-                                                    \`${attendee.description || ''}\`
-                                                )" 
+                                                onclick="editAttendee(${attendee.id})" 
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#editAttendeeModal">
                                                 Edit
                                             </button>
+
                                              <button class="btn btn-danger btn-sm" onclick="deleteAttendee(${attendee.id})">Delete</button>
                                         </td>
                                     </tr>`;

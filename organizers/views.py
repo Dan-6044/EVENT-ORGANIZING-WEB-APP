@@ -539,81 +539,143 @@ def get_vendors(request, event_id):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
+from django.http import JsonResponse
+from .models import (
+    Vendor, Venue, Catering, AV, Decor, Entertainment, Security,
+    Printing, Transportation, WasteManagement
+)
+from django.shortcuts import get_object_or_404
 
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Vendor, Venue, Catering, AV, Decor, Entertainment, Security, Printing, Transportation, WasteManagement
-from .forms import VendorForm, VenueForm, CateringForm, AVForm, DecorForm, EntertainmentForm, SecurityForm, PrintingForm, TransportationForm, WasteManagementForm
+def get_vendor_details(request, vendor_id):
+    vendor = get_object_or_404(Vendor, pk=vendor_id)
 
-def edit_vendor(request, vendor_id):
-    # Fetch the Vendor object and related models using get_object_or_404 to avoid DoesNotExist error
+    vendor_data = {
+        'vendor_name': vendor.name,
+        'vendor_type': vendor.vendor_type,
+        'description': vendor.description,
+        'payment_cost': str(vendor.payment_cost),
+        'deposit': str(vendor.deposit),
+        'credit_days': vendor.credit_days,
+        'payment_status': vendor.payment_status,
+    }
+
+    try:
+        vendor_details = {
+            'venue': {
+                'address': vendor.venue.venue_address,
+                'capacity': vendor.venue.venue_capacity,
+                'rental_cost': str(vendor.venue.venue_rental_cost),
+                'booking_time': vendor.venue.venue_booking_time.strftime('%Y-%m-%d %H:%M:%S'),
+                'requirements': vendor.venue.venue_requirements,
+            },
+            'catering': {
+                'catering_type': vendor.catering.catering_type,
+                'menu': vendor.catering.menu_options,
+                'dietary_preferences': vendor.catering.dietary_preferences,
+                'catering_cost': str(vendor.catering.catering_cost),
+                'service_requirements': vendor.catering.service_requirements,
+            },
+            'av': {
+                'equipment': vendor.av.equipment_provided,
+                'av_cost': str(vendor.av.av_cost),
+                'technical_support': vendor.av.technical_support,
+                'setup_time': vendor.av.setup_time.strftime('%H:%M:%S'),
+                'contact_emergency': vendor.av.contact_emergency,
+            },
+            'decor': {
+                'design_theme': vendor.decor.design_theme,
+                'items_supplied': vendor.decor.items_supplied,
+                'decor_cost': str(vendor.decor.decor_cost),
+                'setup_time': vendor.decor.setup_time.strftime('%H:%M:%S'),
+                'tear_down_time': vendor.decor.return_tear_down_time.strftime('%H:%M:%S'),
+            },
+            'entertainment': {
+                'type': vendor.entertainment.type_of_entertainment,
+                'cost': str(vendor.entertainment.entertainment_cost),
+                'duration': str(vendor.entertainment.performance_duration),
+                'requirements': vendor.entertainment.special_requirements,
+            },
+            'security': {
+                'personnel_count': vendor.security.security_personnel_count,
+                'duties': vendor.security.security_duties,
+                'cost': str(vendor.security.security_cost),
+                'setup_requirements': vendor.security.setup_requirements,
+            },
+            'printing': {
+                'materials': vendor.printing.printed_materials,
+                'cost': str(vendor.printing.printing_cost),
+                'design': vendor.printing.design_requirements,
+                'delivery': vendor.printing.delivery_timeframe.strftime('%Y-%m-%d %H:%M:%S'),
+            },
+            'transportation': {
+                'type': vendor.transportation.transport_type,
+                'cost': str(vendor.transportation.transportation_cost),
+                'schedule': vendor.transportation.transport_schedule,
+                'capacity': vendor.transportation.passenger_capacity,
+                'requests': vendor.transportation.special_requests,
+            },
+            'waste_management': {
+                'waste_types': vendor.wastemanagement.waste_types_collected,
+                'cost': str(vendor.wastemanagement.waste_management_cost),
+                'service_details': vendor.wastemanagement.service_details,
+                'restroom_facilities': vendor.wastemanagement.restroom_facilities,
+            }
+        }
+
+        vendor_data.update(vendor_details)
+    except Exception as e:
+        # Silently ignore missing related models
+        pass
+
+    return JsonResponse(vendor_data)
+
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
+import json
+
+from .models import Vendor, Venue, Catering, AV, Decor, Entertainment  # import your models
+@csrf_exempt
+@require_POST
+def update_vendor(request, vendor_id):
+    try:
+        data = json.loads(request.body)
+        print(f"Data received for vendor update: {data}")  # Log the request data
+
+        vendor = Vendor.objects.get(id=vendor_id)
+
+        vendor.name = data.get('vendor_name', vendor.name)
+        vendor.vendor_type = data.get('vendor_type', vendor.vendor_type)
+        vendor.description = data.get('description', vendor.description)
+        vendor.payment_cost = data.get('payment_cost', vendor.payment_cost)
+        vendor.deposit = data.get('deposit', vendor.deposit)
+        vendor.credit_days = data.get('credit_days', vendor.credit_days)
+        vendor.payment_status = data.get('payment_status', vendor.payment_status)
+        vendor.save()
+
+        return JsonResponse({'message': 'Vendor updated successfully'})
+
+    except Vendor.DoesNotExist:
+        return JsonResponse({'error': 'Vendor not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+from django.shortcuts import get_object_or_404, redirect
+from .models import Vendor
+
+def delete_vendor(request, vendor_id):
+    # Get the vendor or return 404 if not found
     vendor = get_object_or_404(Vendor, id=vendor_id)
-    venue = get_object_or_404(Venue, vendor=vendor) if vendor.vendor_type == "venue" else None
-    catering = get_object_or_404(Catering, vendor=vendor) if vendor.vendor_type == "catering" else None
-    av = get_object_or_404(AV, vendor=vendor) if vendor.vendor_type == "av" else None
-    decor = get_object_or_404(Decor, vendor=vendor) if vendor.vendor_type == "decor" else None
-    entertainment = get_object_or_404(Entertainment, vendor=vendor) if vendor.vendor_type == "entertainment" else None
-    security = get_object_or_404(Security, vendor=vendor) if vendor.vendor_type == "security" else None
-    printing = get_object_or_404(Printing, vendor=vendor) if vendor.vendor_type == "printing" else None
-    transportation = get_object_or_404(Transportation, vendor=vendor) if vendor.vendor_type == "transportation" else None
-    waste_management = get_object_or_404(WasteManagement, vendor=vendor) if vendor.vendor_type == "waste_management" else None
+    
+    # Delete the vendor
+    vendor.delete()
 
-    if request.method == 'POST':
-        # Populate the forms with the existing vendor data before saving changes
-        vendor_form = VendorForm(request.POST, instance=vendor)
-        venue_form = VenueForm(request.POST, instance=venue) if venue else None
-        catering_form = CateringForm(request.POST, instance=catering) if catering else None
-        av_form = AVForm(request.POST, instance=av) if av else None
-        decor_form = DecorForm(request.POST, instance=decor) if decor else None
-        entertainment_form = EntertainmentForm(request.POST, instance=entertainment) if entertainment else None
-        security_form = SecurityForm(request.POST, instance=security) if security else None
-        printing_form = PrintingForm(request.POST, instance=printing) if printing else None
-        transportation_form = TransportationForm(request.POST, instance=transportation) if transportation else None
-        waste_management_form = WasteManagementForm(request.POST, instance=waste_management) if waste_management else None
+    # Redirect to the list of vendors (or wherever you want)
+    return redirect('view_vendors')  # Adjust the redirect URL as needed
 
-        # Check if all forms are valid before saving
-        if all([vendor_form.is_valid(), (venue_form.is_valid() if venue_form else True), (catering_form.is_valid() if catering_form else True),
-                (av_form.is_valid() if av_form else True), (decor_form.is_valid() if decor_form else True),
-                (entertainment_form.is_valid() if entertainment_form else True), (security_form.is_valid() if security_form else True),
-                (printing_form.is_valid() if printing_form else True), (transportation_form.is_valid() if transportation_form else True),
-                (waste_management_form.is_valid() if waste_management_form else True)]):
-            vendor_form.save()
-            if venue_form: venue_form.save()
-            if catering_form: catering_form.save()
-            if av_form: av_form.save()
-            if decor_form: decor_form.save()
-            if entertainment_form: entertainment_form.save()
-            if security_form: security_form.save()
-            if printing_form: printing_form.save()
-            if transportation_form: transportation_form.save()
-            if waste_management_form: waste_management_form.save()
-
-            return redirect('vendor_list')  # Redirect to the vendor list after saving
-
-    else:
-        # Initialize the forms with the existing data
-        vendor_form = VendorForm(instance=vendor)
-        venue_form = VenueForm(instance=venue) if venue else None
-        catering_form = CateringForm(instance=catering) if catering else None
-        av_form = AVForm(instance=av) if av else None
-        decor_form = DecorForm(instance=decor) if decor else None
-        entertainment_form = EntertainmentForm(instance=entertainment) if entertainment else None
-        security_form = SecurityForm(instance=security) if security else None
-        printing_form = PrintingForm(instance=printing) if printing else None
-        transportation_form = TransportationForm(instance=transportation) if transportation else None
-        waste_management_form = WasteManagementForm(instance=waste_management) if waste_management else None
-
-    return render(request, 'edit_vendor.html', {
-        'vendor_form': vendor_form,
-        'venue_form': venue_form,
-        'catering_form': catering_form,
-        'av_form': av_form,
-        'decor_form': decor_form,
-        'entertainment_form': entertainment_form,
-        'security_form': security_form,
-        'printing_form': printing_form,
-        'transportation_form': transportation_form,
-        'waste_management_form': waste_management_form,
-    })
 
 
 
@@ -867,37 +929,31 @@ def get_schedules(request, event_id):
 
     return JsonResponse({'schedules': list(schedules)})
 
-from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from .models import EventSchedule
-from django.contrib.auth.decorators import login_required
-from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 import json
+from .models import EventSchedule
 
 @csrf_exempt
-@login_required
-def update_schedule(request, id):
-    if request.method == "POST":
+@require_POST
+def update_schedule(request, schedule_id):
+    try:
         data = json.loads(request.body)
-        try:
-            # Convert start_time and end_time to datetime objects
-            start_time = timezone.datetime.fromisoformat(data['start_time'])
-            end_time = timezone.datetime.fromisoformat(data['end_time'])
-            
-            # Fetch the schedule from the database and update it
-            schedule = EventSchedule.objects.get(id=id, event__user=request.user)
-            schedule.session_type = data['session_type']
-            schedule.start_time = start_time
-            schedule.end_time = end_time
-            schedule.description = data['description']
-            schedule.save()
+        schedule = EventSchedule.objects.get(id=schedule_id)
 
-            return JsonResponse({"status": "success"})
-        except EventSchedule.DoesNotExist:
-            return JsonResponse({"status": "not found"}, status=404)
-        except ValueError as e:
-            return JsonResponse({"status": "invalid datetime format", "message": str(e)}, status=400)
-    return JsonResponse({"status": "invalid method"}, status=405)
+        schedule.session_type = data.get('session_type', schedule.session_type)
+        schedule.start_time = data.get('start_time', schedule.start_time)
+        schedule.end_time = data.get('end_time', schedule.end_time)
+        schedule.description = data.get('description', schedule.description)
+        schedule.save()
+
+        return JsonResponse({'message': 'Schedule updated successfully'})
+    except EventSchedule.DoesNotExist:
+        return JsonResponse({'error': 'Schedule not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 from django.shortcuts import redirect
 from django.http import JsonResponse
@@ -1210,38 +1266,46 @@ def get_attendees(request, event_id):
     return JsonResponse({'attendees': attendees_data})
 
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
-from django.utils.decorators import method_decorator
 import json
+from django.http import JsonResponse
+from .models import Attendee, Ticket
 
-from .models import Attendee
-
-@require_POST
-@csrf_exempt  # Optional if you're handling CSRF in JS (which you are)
-def update_attendee(request, id):
+def update_attendee(request, attendee_id):
     try:
-        data = json.loads(request.body)
+        if request.method == 'POST':
+            # Parse the JSON data from the request body
+            data = json.loads(request.body)
 
-        attendee = Attendee.objects.get(id=id)
-        attendee.name = data.get('name', '')
-        attendee.email = data.get('email', '')
-        attendee.phone = data.get('phone', '')
-        attendee.ticket = data.get('ticket', '')
-        attendee.discount = data.get('discount', 0)
-        attendee.price = data.get('price', 0)
-        attendee.description = data.get('description', '')
-        attendee.save()
+            # Get the attendee object
+            attendee = Attendee.objects.get(id=attendee_id)
+            
+            # Get the ticket instance based on the ticket_id from the request
+            ticket_id = data.get('ticket')
+            ticket = Ticket.objects.get(id=ticket_id)
 
-        return JsonResponse({'status': 'success'})
+            # Update the attendee fields
+            attendee.name = data.get('name')
+            attendee.email = data.get('email')
+            attendee.phone_number = data.get('phone')
+            attendee.ticket = ticket  # Assign the Ticket instance here
+            attendee.discount_percentage = data.get('discount')
+            attendee.ticket_price = data.get('price')
+            attendee.description = data.get('description')
+
+            # Save the attendee
+            attendee.save()
+
+            return JsonResponse({'status': 'success', 'message': 'Attendee updated successfully'})
 
     except Attendee.DoesNotExist:
         return JsonResponse({'status': 'error', 'message': 'Attendee not found'}, status=404)
+    except Ticket.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Ticket not found'}, status=404)
     except json.JSONDecodeError:
-        return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
 
 from django.http import JsonResponse
 from .models import Ticket
@@ -1260,6 +1324,27 @@ def get_tickets_for_event(request, event_id):
     except Exception as e:
         # Return error if something goes wrong
         return JsonResponse({'status': 'error', 'message': str(e)})
+    
+
+    from django.http import JsonResponse
+from .models import Attendee  # or your relevant model
+from django.shortcuts import get_object_or_404
+
+def get_attendee_details(request, attendee_id):
+    attendee = get_object_or_404(Attendee, id=attendee_id)
+    data = {
+        'id': attendee.id,
+        'name': attendee.name,
+        'email': attendee.email,
+        'phone_number': attendee.phone_number,
+        'ticket_id': attendee.ticket.id,
+        'ticket_name': attendee.ticket.ticket_type,  # Optional if needed
+        'discount_percentage': attendee.discount_percentage,
+        'ticket_price': attendee.ticket_price,
+        'description': attendee.description or '',
+    }
+    return JsonResponse(data)
+
 
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -1347,3 +1432,24 @@ def profile(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+from django.shortcuts import render, redirect
+from .models import Profile
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+@login_required
+def profile(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        profile.bio = request.POST.get('bio', profile.bio)
+        
+        if request.FILES.get('profile_picture'):
+            profile.profile_picture = request.FILES['profile_picture']
+        
+        profile.save()
+        messages.success(request, "Profile updated successfully.")
+        return redirect('profile')
+
+    return render(request, 'profile.html', {'profile': profile})
+
